@@ -1,0 +1,5 @@
+package GameState;
+
+public enum State {
+    PAUSE,MAP1,MAP2,MAP1_PORTAL_OPENED,CHILLING,TITLE_SCREEN, PLAYS_GEO, CIORI
+}
