@@ -118,8 +118,9 @@ public class UserInterf {
             double minutes = Math.floor(timeInSec / 60);
             double seconds = Math.floor(timeInSec % 60); // Explicitly floor the seconds
 
-            g2D.drawString(String.format("Time: %.0f(m) %.0f", minutes, seconds), 10 * panel.actualSize-(int)(Math.log10( minutes ))*15, 40);
+            g2D.drawString(String.format("Time: %.0f(m) %.0f", minutes, seconds), 10 * panel.actualSize-(int)(Math.log10( minutes )+1)*30, 40);
             //System.out.println(minutes+" "+seconds);
+            //System.out.println(10 * panel.actualSize-(int)(Math.log10( minutes )+1)*30);
         }
         if(correctGuess){
             if(System.currentTimeMillis()-time >5000){
@@ -144,6 +145,7 @@ public class UserInterf {
             g2D.drawString(f,0,placement);
         
     }
+    //TODO MOVE INTO PANEL
     public void updateTimer(){
         if (panel.state != State.PAUSE) {
             timeInSec += 1.0 / 60.0; // Increment time by 1/60 seconds

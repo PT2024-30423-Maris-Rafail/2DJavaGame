@@ -22,7 +22,7 @@ public class GuessLocation {
         System.out.println("For guess #"+panel.guesses+": " + current);
     }
     public void guess(int currentFragment){
-
+            panel.headingSlider.setVisible(true);
 //        System.out.println("Guessing " + country);
 //        Scanner scanner = new Scanner(System.in);
 //        String currentGuess = scanner.nextLine();
@@ -67,6 +67,7 @@ public class GuessLocation {
             panel.textFieldPanel.setVisible(false);
             panel.UI.time = System.currentTimeMillis();
             panel.UI.correctGuess = true;
+            panel.headingSlider.setVisible(false);
         }
         else if(panel.guesses == 5){
             panel.playsGeo = false;
@@ -79,6 +80,7 @@ public class GuessLocation {
             panel.map.tilesManager[1][panel.objectManager.fragments.fragments[currentFragment].mapX/panel.actualSize][panel.objectManager.fragments.fragments[currentFragment].mapY/panel.actualSize] = 1;
             panel.itemSetter.setFragment(currentFragment);
             panel.textFieldPanel.setVisible(false);
+            panel.headingSlider.setVisible(false);
         }
 //        else{
         panel.hasCountry = false;

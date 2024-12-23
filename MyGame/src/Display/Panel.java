@@ -24,7 +24,6 @@ import Map.*;
 import Music.MusicPlayer;
 import geoGame.GuessLocation;
 import geoGame.Location;
-import geoGame.Principal;
 import geoGame.StreetViewImage;
 
 
@@ -56,7 +55,7 @@ public class Panel extends JPanel implements Runnable {
 
     int speedMultiplier = 20;//i add this for the future. if we add a 2* speed feature
 
-    public MusicPlayer musicPlayer = new MusicPlayer();
+    public MusicPlayer musicPlayer;// = new MusicPlayer();
 
     public final int[] wordlCol = {51,50};
     public final int[] wordlRow = {51,50};
@@ -67,7 +66,7 @@ public class Panel extends JPanel implements Runnable {
     public int playedSong = 0;
     public Map map = new Map(this);
 
-    public State state = State.MAP1;
+    public State state = State.TITLE_SCREEN;
     //public State previousState = State.MAP1;
     int FPS = 60;
     public Player player = new Player(this, keyHandler, speedMultiplier);
@@ -99,9 +98,16 @@ public class Panel extends JPanel implements Runnable {
     public JButton button;
     public JPanel textFieldPanel = new JPanel();
     public int guessTime;
-    public Panel() {
+    ///LOG IN
+    //public Register register;
+
+    public Panel(MusicPlayer musicPlayer) {
+//        register = new Register();
+//        this.add(register);
+//        register.setVisible(true);
         //this.frame = window;
         //constructer sets parameters relative to the JPanel class
+        this.musicPlayer = musicPlayer;
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);//for better rendering performance
@@ -122,7 +128,7 @@ public class Panel extends JPanel implements Runnable {
         // Add the slider to the bottom of the panel
         //headingSlider.setBounds(0,screenHeight,screenWidth,100);
         this.add(headingSlider, BorderLayout.SOUTH);
-
+        headingSlider.setVisible(false);
         // Call revalidate to refresh layout
         this.revalidate();
 
@@ -225,7 +231,7 @@ public class Panel extends JPanel implements Runnable {
 
                 if(state == State.MAP2) {musicPlayer.playSound(MusicName.Aria_Math);}
                 if(state == State.TITLE_SCREEN){
-                    musicPlayer.playSound(MusicName.Geom_Dash);
+                    //musicPlayer.playSound(MusicName.JOYRIDE);
                 }
 
             }
@@ -269,7 +275,7 @@ public class Panel extends JPanel implements Runnable {
                     repaint();
                     delta--;
                 }
-                if(keyHandler.PAUSED ){
+                if(keyHandler.PAUSED && state!=State.TITLE_SCREEN){
                     if(beforePause==State.CHILLING) beforePause= state;
                     state = State.PAUSE;}
                 else{
@@ -306,25 +312,30 @@ public class Panel extends JPanel implements Runnable {
     }
 
     public void update() {
-        if(!playsGeo){
-            //System.out.println(keyHandler.PAUSED+" "+keyHandler.goRight+" "+keyHandler.goLeft+" "+keyHandler.goUp+" "+keyHandler.goDown );
-            if(!keyHandler.PAUSED && state != State.TITLE_SCREEN ) {
-                //System.out.println("negru");
+        if(state!=State.TITLE_SCREEN){
+            if(!playsGeo){
+                //System.out.println(keyHandler.PAUSED+" "+keyHandler.goRight+" "+keyHandler.goLeft+" "+keyHandler.goUp+" "+keyHandler.goDown );
+                if(!keyHandler.PAUSED ) {
+                    //System.out.println("negru");
 
-                player.updatePlayerWithBoolean(state);
+                    player.updatePlayerWithBoolean(state);
+                }
+                //guessTime = 0;
             }
-            //guessTime = 0;
+            else{
+                if(isReady)
+                {
+                    isReady = false;
+                    guesser.guess(player.objectOfCol);
+                }
+                //guessTime++;
+                //System.out.println(guessTime/60);
+            }
+            UI.updateTimer();
         }
         else{
-            if(isReady)
-            {
-                isReady = false;
-                guesser.guess(player.objectOfCol);
-            }
-            //guessTime++;
-            //System.out.println(guessTime/60);
+            if(keyHandler.Enter){state = State.MAP1;musicPlayer.stopSound(MusicName.ELEVATOR_PERMIT);}
         }
-        UI.updateTimer();
         //else System.out.println("pisic");
 
 

@@ -11,8 +11,8 @@ import Display.Panel.*;
 public class Principal {
     public static void main(Display.Panel panel) {
 
-        // Path to the folder containing the pictures
-        String folderPath = "D:\\UTCN\\An II-sem I\\OOP\\PROJECT\\GEO"; // Replace with the actual folder path
+
+        String folderPath = "D:\\UTCN\\An II-sem I\\OOP\\PROJECT\\GEO";
 
         File folder = new File(folderPath);
         File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".png"));
@@ -27,13 +27,13 @@ public class Principal {
         int score = 0;
         int tries = 0;
         while (score < 3 && tries <5) {
-            // Randomly select an image
+
             File selectedFile = files[random.nextInt(files.length)];
 
             // Display the image
             displayImage(selectedFile);
 
-            // Prompt the user to guess
+
             System.out.print("Guess the name of the picture (or type 'exit' to quit): ");
             String userGuess = scanner.nextLine();
 
@@ -41,7 +41,7 @@ public class Principal {
                 break;
             }
 
-            // Check the guess (ignoring file extension)
+
             String correctName = selectedFile.getName().substring(0, selectedFile.getName().lastIndexOf('.'));
             if (userGuess.equalsIgnoreCase(correctName)) {
                 System.out.println("Correct! You gain a point.");
@@ -57,7 +57,7 @@ public class Principal {
         panel.playsGeo = false;
     }
 
-    // Method to display an image using a JFrame
+
     private static void displayImage(File imageFile) {
         JFrame frame = new JFrame("Guess the Picture");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -77,7 +77,7 @@ public class Principal {
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
 
-            // Close the frame automatically after a few seconds (optional)
+
 
         } catch (Exception e) {
             System.out.println("Error displaying the image: " + e.getMessage());

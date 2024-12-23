@@ -1,0 +1,5 @@
+package GameState;
+
+public enum UserLoginStatus {
+    INVALID_PASS,VALID,INVALID_NAME,TAKEN_NAME,PASSWORD_MISMATCH,TAKEN_EMAIL
+}

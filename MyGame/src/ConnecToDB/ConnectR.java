@@ -1,8 +1,9 @@
 package ConnecToDB;
 
-import GameState.State;
+import RegisterForm.User;
 import geoGame.Location;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.Random;
 
@@ -232,6 +233,66 @@ public class ConnectR {
             }
 
         }
+    }
+
+    ///LOG IN
+    public User getAccountBasedOnUsername(String username) {
+        User user;
+        try {
+            Statement stmt = connection.createStatement();
+
+            String query = "SELECT * FROM users WHERE username = '" + username + "' ;";
+            //System.out.println(random.nextInt(size));
+            ResultSet rs = stmt.executeQuery(query);
+            //System.out.println("negro");
+            if (rs.next()) {
+                user = new User();
+                user.setEmail(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setEmail(rs.getString("email"));
+                return user;
+            }
+
+            return null;
+        } catch (Exception e) {
+            System.out.println("problema la get user NAME");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public User getAccountBasedOnEmail(String email) {
+        User user;
+        try {
+            Statement stmt = connection.createStatement();
+
+            String query = "SELECT * FROM users WHERE email = '" + email + "' ;";
+            //System.out.println(random.nextInt(size));
+            ResultSet rs = stmt.executeQuery(query);
+            //System.out.println("negro");
+            if (rs.next()) {
+                user = new User();
+                user.setEmail(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setEmail(rs.getString("email"));
+                return user;
+            }
+
+            return null;
+        } catch (Exception e) {
+            System.out.println("problema la get user EMAIL");
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public void registerUser(String username, String password, String email) throws SQLException{
+
+            Statement stmt = connection.createStatement();
+
+            String query = "INSERT INTO users (username, password, email) VALUES ('"+ username+"','"+password+"','"+email+"');";
+
+            stmt.executeUpdate(query);
+
     }
 }
 

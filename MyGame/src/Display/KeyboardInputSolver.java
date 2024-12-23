@@ -38,7 +38,7 @@ public class KeyboardInputSolver implements KeyListener {
         //System.out.println("Key Pressed: " + KeyEvent.getKeyText(code));
         if(code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
             goUp = true;
-            //System.out.println("UP");
+//            System.out.println("UP");
         }
         if(code == KeyEvent.VK_A || code == KeyEvent.VK_LEFT) {
             goLeft = true;

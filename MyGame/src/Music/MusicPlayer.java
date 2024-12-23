@@ -43,6 +43,12 @@ public class MusicPlayer {
             case Geom_Dash -> {
                 return 6;
             }
+            case ELEVATOR_PERMIT -> {
+                return 7;
+            }
+            case JOYRIDE -> {
+                return 8;
+            }
         }
         return -1;
     }
@@ -60,6 +66,7 @@ public class MusicPlayer {
         int index = nameToIndex(name);
         musicTracks[index].setFramePosition(0);
         musicTracks[index].start();
+        if(name == MusicName.Aria_Math || name == MusicName.Empty || name == MusicName.Geom_Dash || name == MusicName.ELEVATOR_PERMIT) musicTracks[index].loop(Clip.LOOP_CONTINUOUSLY);
     }
     public void stopSound(MusicName name) {
         int index = nameToIndex(name);
