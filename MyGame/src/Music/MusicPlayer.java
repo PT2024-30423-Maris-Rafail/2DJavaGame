@@ -66,7 +66,7 @@ public class MusicPlayer {
         int index = nameToIndex(name);
         musicTracks[index].setFramePosition(0);
         musicTracks[index].start();
-        if(name == MusicName.Aria_Math || name == MusicName.Empty || name == MusicName.Geom_Dash || name == MusicName.ELEVATOR_PERMIT) musicTracks[index].loop(Clip.LOOP_CONTINUOUSLY);
+        if(name == MusicName.Aria_Math || name == MusicName.Empty || name == MusicName.Geom_Dash || name == MusicName.ELEVATOR_PERMIT|| name == MusicName.JOYRIDE) musicTracks[index].loop(Clip.LOOP_CONTINUOUSLY);
     }
     public void stopSound(MusicName name) {
         int index = nameToIndex(name);

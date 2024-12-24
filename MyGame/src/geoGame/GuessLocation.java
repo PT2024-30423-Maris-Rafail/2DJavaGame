@@ -27,16 +27,18 @@ public class GuessLocation {
 //        Scanner scanner = new Scanner(System.in);
 //        String currentGuess = scanner.nextLine();
         String currentGuess = null;
-
+        double timeBeforeGeo=0;
+        double timeAfterGeo=0;
         synchronized (panel.gameThread) {
             try {
                 //System.out.println("mata");
                 //System.out.println("Waiting for user input...");
-                double NIGGERTimeBeforeGeo = System.nanoTime();
+                timeBeforeGeo = System.nanoTime();
                 //System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa"+);
                 panel.gameThread.wait(); // Wait for input to be provided
                 //System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"+System.nanoTime());
-                double NIGGERTimeAfterGeo = System.nanoTime();
+                timeAfterGeo = System.nanoTime();
+
                 //panel.UI.timeInSec+=(NIGGERTimeAfterGeo-NIGGERTimeBeforeGeo)/1000000000.0;
                 currentGuess = panel.guessField.getText(); // Retrieve input
             } catch (InterruptedException e) {
@@ -49,6 +51,7 @@ public class GuessLocation {
             panel.correctGuesses++;
         }
         if(panel.correctGuesses == 1){
+            if(panel.player.fragmentNumber == 3) panel.UI.timeInSec +=(timeAfterGeo - timeBeforeGeo)/1000000000.0;
             panel.playsGeo = false;
             panel.state = panel.previousState;
             panel.setFocusable(true); // Allow the panel to gain focus
@@ -59,6 +62,7 @@ public class GuessLocation {
             if(!panel.player.hasDarkCompass){
                 panel.objectManager.fragments.fragments[currentFragment] = null;
             }
+
             else{
                 panel.map.tilesManager[1][panel.objectManager.fragments.fragments[currentFragment].mapX/panel.actualSize][panel.objectManager.fragments.fragments[currentFragment].mapY/panel.actualSize] = 1;
                 panel.itemSetter.setFragment(currentFragment);

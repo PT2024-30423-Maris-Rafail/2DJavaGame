@@ -20,7 +20,8 @@ public class Player extends Entity {
     public final int playerY;
     public boolean hasCompass = false;
     public boolean hasDarkCompass = false;
-    public int fragmentNumber = 0;
+    public int fragmentNumber = 3;
+    //TODO MAKE FRAGMENT NUMBER 0
     Clip clipOutOfB,clipSpuderMan;
     public int objectOfCol;
     public Player(Panel panel, KeyboardInputSolver keyHandler, int speedMultiplier) {
@@ -78,6 +79,7 @@ public class Player extends Entity {
         //System.out.println("MOOOOOOOOOR");
         if(mapY/panel.actualSize==0 && mapX/panel.actualSize==24 && (hasDarkCompass|| hasCompass) && state==State.MAP1_PORTAL_OPENED){
             panel.state=State.MAP2;
+            panel.musicPlayer.stopSound(MusicName.PortalSFX);
 //            mapY=panel.actualSize*24;
 //            mapX=panel.actualSize*24;
             mapY=panel.actualSize;
@@ -186,6 +188,8 @@ public class Player extends Entity {
 
                 if(collides) System.out.println("Collision Detected");
                 //System.out.println("ce pisici");
+                collides = false;
+                //TODO remove the collides = false
                 if (hasDarkCompass || !collides) {
 
                     //System.out.println("can move");

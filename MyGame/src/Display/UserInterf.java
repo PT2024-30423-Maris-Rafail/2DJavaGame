@@ -3,6 +3,7 @@ package Display;
 import ConnecToDB.ConnectR;
 import Entity.Player;
 import GameState.State;
+import geoGame.ScoreBoard;
 
 import java.awt.*;
 import java.sql.ResultSet;
@@ -12,11 +13,13 @@ public class UserInterf {
     Font fontPause;
     Font font2;
     Font font3;
+    Font fontGreet;
+    Font fontInstr;
     public int timeM = 0;
     public int timeT = 0;
     String msg = null;
     String Tip = null;
-    ConnectR connection = new ConnectR();
+    //ConnectR panel.dBConnection = new ConnectR();
     ResultSet rs;
     int active_seconds=0;
     int advance = 0;
@@ -26,13 +29,17 @@ public class UserInterf {
     //TimerIncrementation timer;
     public boolean correctGuess;
     public double time;
+    public ScoreBoard scoreBoard;
     public UserInterf(Panel panel) {
         this.panel = panel;
         fontPause = new Font("Arial", Font.BOLD, 100);
         font2 = new Font("Arial",Font.PLAIN,30);
         font3 = new Font("Arial",Font.PLAIN,20);
+        fontGreet = new Font("Arial", Font.BOLD, 70);
+        fontInstr = new Font("Arial", Font.BOLD, 40);
         correctGuess = false;
         //timer = new TimerIncrementation(this);
+
     }
 
     public void setUI(Graphics2D g2D, Player player) {
@@ -43,7 +50,7 @@ public class UserInterf {
         g2D.setColor(Color.white);
         switch(panel.state){
             case TITLE_SCREEN -> {
-                drawTT();
+                drawTT(g2D);
                 break;
             }
             case PAUSE -> {
@@ -75,10 +82,10 @@ public class UserInterf {
             }
             else advance=1;
             if(advance==1 && panel.state != State.PAUSE){
-                        active_seconds = connection.getTipTime()*60;
+                        active_seconds = panel.dBConnection.getTipTime()*60;
                 //System.out.println(active_seconds);
-                        Tip = connection.getTip();
-                        connection.currentTip++;
+                        Tip = panel.dBConnection.getTip();
+                        panel.dBConnection.currentTip++;
             }
 
             timeT = 0;
@@ -88,7 +95,7 @@ public class UserInterf {
 
         if(timeM >300 && panel.player.keyHandler.Enter && panel.state!=State.PAUSE){
             timeM = 0;
-            msg = connection.getMessage();
+            msg = panel.dBConnection.getMessage();
             System.out.println("did");
         }
         placement=40;
@@ -107,7 +114,7 @@ public class UserInterf {
         }
 
         if(panel.state == State.MAP2){
-            drawMap2(g2D,player,placement);
+            drawMap2(g2D,placement);
         }
 
         g2D.setFont(font2);
@@ -122,32 +129,43 @@ public class UserInterf {
             //System.out.println(minutes+" "+seconds);
             //System.out.println(10 * panel.actualSize-(int)(Math.log10( minutes )+1)*30);
         }
-        if(correctGuess){
+        if(correctGuess && (panel.player.fragmentNumber<4 && !panel.player.hasDarkCompass) ){
             if(System.currentTimeMillis()-time >5000){
                 correctGuess = false;
             }
             g2D.setFont(fontPause);
             g2D.drawString(String.format("CORRECT"),panel.screenWidth/2-230,panel.screenHeight/3);
         }
+        if(panel.state == State.GAME_END2)drawScoreBoard(g2D);
     }
 
     public void drawPause(Graphics2D g2D){
         g2D.setFont(fontPause);
             g2D.drawString(String.format("PAUSED"),panel.screenWidth/2-200,panel.screenHeight/3);
     }
-    public void drawTT(){
+    public void drawTT(Graphics2D g2D){
 
     }
-    public void drawMap2(Graphics2D g2D,Player player,int placement){
+    public void drawMap2(Graphics2D g2D,int placement){
 
-            f="Number of fragments: "+(player.fragmentNumber);
+            f="Number of fragments: "+(panel.player.fragmentNumber);
             g2D.setFont(font3);
             g2D.drawString(f,0,placement);
         
     }
-    //TODO MOVE INTO PANEL
+    public void drawScoreBoard(Graphics2D g2D){
+        int player_id;
+        if(panel.isEmail){
+
+        }
+        for(int i = 0;i<10;i++){
+            System.out.println(scoreBoard.scoreBoard[i].getUsername()+" "+scoreBoard.scoreBoard[i].getTime());
+        }
+    }
+    //TODO MOVE INTO PANEL + UPDATE CONDITION FOR GAME END
     public void updateTimer(){
         if (panel.state != State.PAUSE) {
+            //System.out.println(timeInSec);
             timeInSec += 1.0 / 60.0; // Increment time by 1/60 seconds
             timeM++;
             timeT++;

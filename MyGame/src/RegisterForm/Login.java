@@ -17,6 +17,8 @@ public class Login extends JDialog {
     private JButton createAccountButton;
     private JCheckBox allowView;
     //private JButton viewPass;
+    public String username;
+    public boolean isEmail;
     public UserLoginStatus status;
     //LOG IN
     public interface LoginSuccessListener {
@@ -64,8 +66,18 @@ public class Login extends JDialog {
                             passWF.setText("");
                         }
 
-                        case VALID ->{
+                        case VALID_USERNAME ->{
                             if (loginSuccessListener != null) {
+                                username = textFUserN.getText();
+                                isEmail = false;
+                                loginSuccessListener.onLoginSuccess(); // Notify the listener
+                            }
+                        }
+
+                        case VALID_EMAIL ->{
+                            if (loginSuccessListener != null) {
+                                username = textFUserN.getText();
+                                isEmail = true;
                                 loginSuccessListener.onLoginSuccess(); // Notify the listener
                             }
                         }

@@ -18,14 +18,14 @@ public class Main {
         window.setResizable(false);
         window.setTitle("Lost");
 
-        // Create a CardLayout to switch between panels
+        // Create a CardLayout to switch between panels (awesome class)
         JPanel mainPanel = new JPanel(new CardLayout());
 
         // Login Panel
-        Login login = new Login(window); // Instance of the login panel
+        Login login = new Login(window);
         mainPanel.add(login.LoginPanel, "Login");
-        // Login Panel
-        Register register = new Register(window); // Instance of the Register panel
+        // Reg Panel
+        Register register = new Register(window);
         mainPanel.add(register.RegisterPanel, "Register");
 
         // Game Panel
@@ -33,33 +33,34 @@ public class Main {
         Panel gamePanel = new Panel(musicPlayer);
         mainPanel.add(gamePanel, "Game");
 
-        // Set main panel to the JFrame
+
         window.setContentPane(mainPanel);
         window.setPreferredSize(new Dimension(600, 400)); // Set new size
         window.pack();
         window.setLocationRelativeTo(null);
         window.setVisible(true);
 
-        // Transition to the game panel after 3 seconds
+
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
 
         musicPlayer.playSound(MusicName.ELEVATOR_PERMIT);
 
         login.setLoginSuccessListener(
                 ()->{
-                    window.setPreferredSize(new Dimension(1152, 960)); // Set new size
-                    window.pack(); // Adjust the size to fit new preferred dimensions
-                    window.setLocationRelativeTo(null); // Center the window again
-
+                    window.setPreferredSize(new Dimension(1152, 960));
+                    window.pack();
+                    window.setLocationRelativeTo(null);
+                    gamePanel.username = login.username;
+                    gamePanel.isEmail = login.isEmail;
                     // Switch to the game panel
                     cardLayout.show(mainPanel, "Game");
-                    gamePanel.requestFocusInWindow(); // Ensure focus is on the game panel
-                    gamePanel.startTheThread(); // Start game thread
+                    gamePanel.requestFocusInWindow();
+                    gamePanel.startTheThread();
                 }
         );
         login.setRegisterSuccessListener(
                 ()->{
-                    window.setPreferredSize(new Dimension(600, 500)); // Set new size
+                    window.setPreferredSize(new Dimension(600, 500));
                     window.pack();
                     window.setLocationRelativeTo(null);
 
@@ -70,7 +71,7 @@ public class Main {
         );
         register.setBackToLoginListener(
                 ()->{
-                    window.setPreferredSize(new Dimension(600, 400)); // Set new size
+                    window.setPreferredSize(new Dimension(600, 400));
                     window.pack();
                     window.setLocationRelativeTo(null);
 
@@ -78,19 +79,6 @@ public class Main {
                     register.requestFocusInWindow();
                 }
         );
-//        Timer timer = new Timer(30000, e -> {
-//            // Resize the JFrame for the game panel
-//
-//            //musicPlayer.stopSound(MusicName.ELEVATOR_PERMIT);
-//        });
-//        timer.setRepeats(false); // Ensure it only runs once
-//        timer.start();
-    }
-
-
-
-    public static void game2() {
-        //Principal.main();
     }
 
     public static void main(String[] args) {
