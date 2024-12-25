@@ -8,14 +8,14 @@ UP LEFT: 0,0
         (0,MAX)
  */
 
-        package Display;
+package Display;
 
 import ConnecToDB.ConnectR;
 import Entity.Player;
 
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.util.Random;
 
 import GameState.MusicName;
 import GameState.State;
@@ -30,6 +30,7 @@ import geoGame.StreetViewImage;
 
 
 public class Panel extends JPanel implements Runnable {
+
     //All hail what Java developers give us
     public final int TileSize = 32;//we want tiles of 16 pixels, but our screens are too god
     //suffering from succes.
@@ -46,7 +47,7 @@ public class Panel extends JPanel implements Runnable {
     //we need to set an FPS to see how fast we update
 
     public Thread gameThread;
-    public Thread timerThread;//used to measure the timem for updates
+
 
     public KeyboardInputSolver keyHandler = new KeyboardInputSolver();//like scanner, detects input
     //reminds me of assembly, yikes
@@ -59,8 +60,8 @@ public class Panel extends JPanel implements Runnable {
 
     public MusicPlayer musicPlayer;// = new MusicPlayer();
 
-    public final int[] wordlCol = {51,50};
-    public final int[] wordlRow = {51,50};
+    public final int[] wordlCol = {51, 50};
+    public final int[] wordlRow = {51, 50};
     //public final int worldWidth = actualSize * wordlCol;
     //public final int worldHeight = actualSize * wordlRow;
     public int nrOfMaps = 20;
@@ -85,37 +86,41 @@ public class Panel extends JPanel implements Runnable {
     public StreetViewImage geoGame = new StreetViewImage(this);
     public boolean needsReload = true;
     public boolean hasCountry = false, hasCountry1 = false;
-    public int sliderValue,sliderValue1;
-    int size ;
-    Random random = new Random();
+    public int sliderValue, sliderValue1;
+    int size;
+
     //int index = random.nextInt(size)+1;
     GuessLocation guesser;
-    public int guesses,correctGuesses;
-    public boolean moveCurrent = false;
+    public int guesses, correctGuesses;
     public State previousState;
     public boolean firstContact = true;
     public boolean isReady = false;
     public JSlider headingSlider;
     public JTextField guessField;
-    public JButton button;
     public JPanel textFieldPanel = new JPanel();
     public int guessTime;
-    ///LOG IN
+    /// LOG IN
     String username;
     public boolean isEmail;
     int userId;
     //public Register register;
-    ///Leader Board
+    /// Leader Board
     public TimeScore currentScore = new TimeScore();
     public TimeScore bestTimeScore = new TimeScore();
     public ScoreBoard scoreBoard;
-    ScoreTable tableModel ;
-    JTable scoreTable ;
+    ScoreTable tableModel;
+    JTable scoreTable;
 
     // Add table to a JScrollPane
-    JScrollPane scrollPane ;
+    JScrollPane scrollPane;
+    JPanel mainPanel;
+    CardLayout cardLayout;
+    JFrame window;
 
-    public Panel(MusicPlayer musicPlayer) {
+    public Panel(MusicPlayer musicPlayer, JPanel mainPanel, CardLayout cardLayout, JFrame window) {
+        this.window = window;
+        this.mainPanel = mainPanel;
+        this.cardLayout = cardLayout;
 //        register = new Register();
 //        this.add(register);
 //        register.setVisible(true);
@@ -178,12 +183,12 @@ public class Panel extends JPanel implements Runnable {
         guessField.setBackground(Color.BLACK);
         guessField.setForeground(new Color(0x00FF00));
         guessField.setCaretColor(new Color(0x00FF00));
-        guessField.setFont(new Font("Consolas",Font.PLAIN,25));
+        guessField.setFont(new Font("Consolas", Font.PLAIN, 25));
         guessField.setHorizontalAlignment(JTextField.CENTER);
         //guessField.addKeyListener(keyHandler);
         guessField.addActionListener(e -> {
-            String guess = guessField.getText();
-            synchronized (gameThread){
+
+            synchronized (gameThread) {
                 gameThread.notify();
             }
         });
@@ -210,11 +215,11 @@ public class Panel extends JPanel implements Runnable {
         //System.out.println(size);
         //System.out.println(player.playerX + " " + player.playerY);
 
-        double drawInterval = 1000000000 / FPS; ///redwar the screen each 0.166... seconds
+        double drawInterval = 1000000000.0 / FPS; ///redwar the screen each 0.166... seconds
         //for our game loop, due to how the methods are used, the timem is in nanoseconds
         //nano = 10^(-9), so the draw interval is 1sec/ FPS, so every one 60th of a second, we want to do the update and redrawing
 
-        double nextDrawTime = System.nanoTime() + drawInterval;///System.nanoTime-> current timem
+        //double nextDrawTime = System.nanoTime() + drawInterval;///System.nanoTime-> current timem
         //our loop starts, let's say, at a timem t, so we start measuring from that onward.
         //the next cycle must be after a drawInterval has passed=> t + drawInterval
 
@@ -222,7 +227,7 @@ public class Panel extends JPanel implements Runnable {
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
-        boolean doMap = true;
+
         //musicPlayer.play(state,5);
         //this must run indefinitely aka: the thread is not null
 
@@ -233,7 +238,7 @@ public class Panel extends JPanel implements Runnable {
             State currentState = state;
             //TO DO: implement how the state is changed
 
-            if(state == State.MAP1) {
+            if (state == State.MAP1) {
 //                if(clipEmpty == null) {
 //                    clipEmpty = musicPlayer.getsClip(MusicName.Empty);
 //                }
@@ -241,11 +246,13 @@ public class Panel extends JPanel implements Runnable {
                 //clipEmpty.setFramePosition(0);
                 //clip = musicPlayer.playSad();
                 //clipEmpty.start();
-                System.out.println("AAAAAAAAAAAAAA");}
-            else {
+                System.out.println("AAAAAAAAAAAAAA");
+            } else {
 
-                if(state == State.MAP2) {musicPlayer.playSound(MusicName.Aria_Math);}
-                if(state == State.GAME_END1){
+                if (state == State.MAP2) {
+                    musicPlayer.playSound(MusicName.Aria_Math);
+                }
+                if (state == State.GAME_END1) {
                     musicPlayer.playSound(MusicName.JOYRIDE);
                 }
 
@@ -255,8 +262,8 @@ public class Panel extends JPanel implements Runnable {
                 //if(state!=State.PAUSE)guessTime++;
                 //System.out.println("here "+state);
                 //System.out.println(state+" "+previousState);
-                if(player.hasDarkCompass && (state == State.MAP1 || state == State.MAP1_PORTAL_OPENED)) {
-                    map.tiles[0][1].isCollision=false;
+                if (player.hasDarkCompass && (state == State.MAP1 || state == State.MAP1_PORTAL_OPENED)) {
+                    map.tiles[0][1].isCollision = false;
                 }
                 //musicPlayer.play(State.MAP1);
                 //we must:
@@ -272,7 +279,7 @@ public class Panel extends JPanel implements Runnable {
 
                 remainingTime /= 1000000;//the sleep method accepts only MILISECONDS!!!
 
-                if (remainingTime < 0) {//if some bullshit quantum physics happen and we spent more than needed on paint/update, we start again
+                if (remainingTime < 0) {//if some bullshit quantum physics happen, and we spent more than needed on paint/update, we start again
                     remainingTime = 0;
                 }
                 Thread.sleep((long) remainingTime);// nb-ul. problem: sleep method accepts only long => type casting
@@ -290,17 +297,21 @@ public class Panel extends JPanel implements Runnable {
                     repaint();
                     delta--;
                 }
-                if(keyHandler.PAUSED && state!=State.TITLE_SCREEN){
-                    if(beforePause==State.CHILLING) beforePause= state;
-                    state = State.PAUSE;}
-                else{
-                    if(beforePause != State.CHILLING) {
+                if (keyHandler.PAUSED && state != State.TITLE_SCREEN) {
+                    if (beforePause == State.CHILLING) beforePause = state;
+                    state = State.PAUSE;
+                } else {
+                    if (beforePause != State.CHILLING) {
                         //clipPause.stop();
                         musicPlayer.stopSound(MusicName.Geom_Dash);
                         //clipEmpty.start();
-                        if(state==State.MAP1 || state == State.MAP1_PORTAL_OPENED) musicPlayer.playSound(MusicName.Empty);
+                        if (state == State.MAP1 || state == State.MAP1_PORTAL_OPENED)
+                            musicPlayer.playSound(MusicName.Empty);
                         else musicPlayer.playSound(MusicName.Aria_Math);
-                        currentState = State.PAUSE;state = beforePause;beforePause = State.CHILLING; }
+                        currentState = State.PAUSE;
+                        state = beforePause;
+                        beforePause = State.CHILLING;
+                    }
 
 
                 }
@@ -310,7 +321,7 @@ public class Panel extends JPanel implements Runnable {
             //clipEmpty.stop();
             musicPlayer.stopSound(MusicName.Empty);
             musicPlayer.stopSound(MusicName.Aria_Math);
-            if(state == State.PAUSE){
+            if (state == State.PAUSE) {
                 //if(clipPause == null) clipPause = musicPlayer.getsClip(MusicName.Geom_Dash);
                 //clipPause.setFramePosition(0);
                 //clipPause.start();
@@ -325,33 +336,33 @@ public class Panel extends JPanel implements Runnable {
 
     public void update() {
 
-        if(state!=State.TITLE_SCREEN){
-            if(!playsGeo){
+        if (state != State.TITLE_SCREEN) {
+            if (!playsGeo) {
                 //System.out.println(keyHandler.PAUSED+" "+keyHandler.goRight+" "+keyHandler.goLeft+" "+keyHandler.goUp+" "+keyHandler.goDown );
-                if(!keyHandler.PAUSED && state!=State.GAME_END1 && state != State.GAME_END2) {
+                if (!keyHandler.PAUSED && state != State.GAME_END1 && state != State.GAME_END2) {
                     //System.out.println("negru");
 
                     player.updatePlayerWithBoolean(state);
                 }
                 //guessTime = 0;
-            }
-            else{
-                if(isReady)
-                {
+            } else {
+                if (isReady) {
                     isReady = false;
                     guesser.guess(player.objectOfCol);
                 }
                 //guessTime++;
                 //System.out.println(guessTime/60);
             }
-            if(state != State.GAME_END2 && state != State.GAME_END1 && !player.hasDarkCompass && player.fragmentNumber == 4 ) {
+            if (state != State.GAME_END2 && state != State.GAME_END1 && !player.hasDarkCompass && player.fragmentNumber == 4) {
                 prepareGameEnd();
             }
-            if(state != State.GAME_END1 && state != State.PLAYS_GEO && state != State.GAME_END2) UI.updateTimer();
-        }
-        else{
+            if (state != State.GAME_END1 && state != State.PLAYS_GEO && state != State.GAME_END2) UI.updateTimer();
+        } else {
 
-            if(keyHandler.Enter){state = State.MAP1;musicPlayer.stopSound(MusicName.ELEVATOR_PERMIT);}
+            if (keyHandler.Enter) {
+                state = State.MAP1;
+                musicPlayer.stopSound(MusicName.ELEVATOR_PERMIT);
+            }
         }
         //else System.out.println("pisic");
 
@@ -367,54 +378,52 @@ public class Panel extends JPanel implements Runnable {
         //we need to work in 2D, so we get the Graphics2 class
         //pretty much like how wrappers have their own specific methods, idk...
         Graphics2D g2d = (Graphics2D) g;
-        if(state == State.GAME_END1 || state == State.GAME_END2){
-            if(state == State.GAME_END1) paintGameEndInfo(g2d);
-            else paintGameEndScore(g2d);
-        }
+        if (state == State.GAME_END1 || state == State.GAME_END2) {
+            if (state == State.GAME_END1) paintGameEndInfo(g2d);
 
-        else {if(state == State.TITLE_SCREEN){
-            paintTitleScreen(g2d);
-        }
-        else{
+        } else {
+            if (state == State.TITLE_SCREEN) {
+                paintTitleScreen(g2d);
+            } else {
 
-            if(!playsGeo){
+                if (!playsGeo) {
 
-                paintNormalGame(g2d);
+                    paintNormalGame(g2d);
 
-            }
-            else {
-                textFieldPanel.setVisible(true);
+                } else {
+                    textFieldPanel.setVisible(true);
 
-                if(!hasCountry){
-                    if(firstContact){
-                        guesses = 0;
-                        correctGuesses = 0;
-                        firstContact = false;
+                    if (!hasCountry) {
+                        if (firstContact) {
+                            guesses = 0;
+                            correctGuesses = 0;
+                            firstContact = false;
+                        }
+                        int validIndex = dBConnection.getValidIndex(size);
+                        //System.out.println(niggus);
+                        location = dBConnection.getCoordinates(validIndex);
+                        guesser.setCountry(location.getCountry());
+                        guesser.setLocations(validIndex);
+                        hasCountry = true;
+                        System.out.println("In panel location: " + location.getCountry());
+
+
+                        isReady = true;
                     }
-                    int validIndex = dBConnection.getValidIndex(size);
-                    //System.out.println(niggus);
-                    location = dBConnection.getCoordinates(validIndex);
-                    guesser.setCountry(location.getCountry());
-                    guesser.setLocations(validIndex);
-                    hasCountry = true;
-                    System.out.println("In panel location: " + location.getCountry());
 
+                    if (needsReload) {
+                        needsReload = false;
+                        geoGame.updateImageAsync(location.getCoordinates());
+                        sliderValue1 = sliderValue;
+                    }
+                    geoGame.drawGeo(g2d);
 
-                    isReady = true;
                 }
-
-                if( needsReload ){
-                    needsReload = false;
-                    geoGame.updateImageAsync(location.getCoordinates());
-                    sliderValue1 = sliderValue;
-                }
-                geoGame.drawGeo(g2d);
-
             }
-        }}
+        }
     }
 
-    public void paintTitleScreen(Graphics2D g2d){
+    public void paintTitleScreen(Graphics2D g2d) {
         g2d.setFont(UI.fontPause);
         FontMetrics fm = g2d.getFontMetrics(UI.fontPause);//I am always in awe of what methods are available to us... praise the devs
         FontMetrics fm1 = g2d.getFontMetrics(UI.fontInstr);
@@ -439,100 +448,138 @@ public class Panel extends JPanel implements Runnable {
         map.drawTiles(g2d);
         objectManager.draw(state, g2d);
         player.drawPlayer(g2d);
-        UI.setUI(g2d,player);
+        UI.setUI(g2d, player);
         g2d.dispose();
     }
 
-    public void prepareGameEnd(){
+    public void prepareGameEnd() {
+        if (isEmail) userId = dBConnection.getUserIDEmail(username);
+        else userId = dBConnection.getUserIDUsername(username);
 
-        //System.out.println("NIGGGGGGGGGGGGGGGG");
+        state = State.GAME_END1;
+
+        currentScore.hour = (int) Math.floor(UI.timeInSec / 3600);
+        currentScore.minutes = (int) Math.floor((UI.timeInSec / 60) % 60);
+        currentScore.seconds = (int) Math.floor(UI.timeInSec % 60);
+        currentScore.milliseconds = (int) Math.floor((UI.timeInSec * 100) % 100);
+        int scoreId = dBConnection.addRun(currentScore, userId);
+
+        bestTimeScore = dBConnection.getBestTime(userId);
+        if (compareScores(bestTimeScore, currentScore) > 0) {
+            dBConnection.updateBestRun(scoreId, userId);
+        }
 
         scoreBoard = dBConnection.getScoreBoard();
         tableModel = new ScoreTable(scoreBoard);
         scoreTable = new JTable(tableModel);
+
+        // Customize table appearance
+        scoreTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        scoreTable.setRowHeight(30);
+        //scoreTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        JTableHeader tableHeader = scoreTable.getTableHeader();
+        tableHeader.setFont(new Font("SansSerif", Font.BOLD, 14));
+        tableHeader.setBackground(new Color(70, 130, 180)); // Steel blue
+        tableHeader.setForeground(Color.WHITE);
+
         scrollPane = new JScrollPane(scoreTable);
-        if(isEmail) userId = dBConnection.getUserIDEmail(username);
-        else userId = dBConnection.getUserIDUsername(username);
-        //System.out.println(userId);
-        state = State.GAME_END1;
+// Example usage
 
-        currentScore.hour = (int)Math.floor(UI.timeInSec/3600);
-        currentScore.minutes = (int)Math.floor((UI.timeInSec/60)%60);
-        currentScore.seconds = (int)Math.floor(UI.timeInSec%60);
-        currentScore.milliseconds =(int)Math.floor((UI.timeInSec*100)%100);
-        int scoreId = dBConnection.addRun(currentScore, userId);
+        Color highlightColor = new Color(182, 60, 60); // Light red
 
-        bestTimeScore = dBConnection.getBestTime(userId);
-        if(compareScores(bestTimeScore,currentScore) > 0){
-            dBConnection.updateBestRun(scoreId, userId);
+// Apply the custom renderer to the table
+        CellColorer rowRenderer = new CellColorer(username, highlightColor);
+        for (int col = 0; col < scoreTable.getColumnCount(); col++) {
+            scoreTable.getColumnModel().getColumn(col).setCellRenderer(rowRenderer);
         }
-        System.out.println(currentScore.hour+" "+currentScore.minutes+" "+currentScore.seconds+" "+currentScore.milliseconds);
-        System.out.println(bestTimeScore.hour+" "+ bestTimeScore.minutes+" "+ bestTimeScore.seconds+" "+ bestTimeScore.milliseconds);
+        // Create a new panel to hold the label and table
+        JPanel scorePanel = new JPanel(new BorderLayout());
+        scorePanel.setBackground(Color.WHITE);
+
+        // Add header text
+        JLabel headerLabel = new JLabel("Game Over! These are the top 10 scores:");
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        headerLabel.setForeground(new Color(50, 50, 150));
+        JLabel headerLabel1 = new JLabel("Your scores are highlighted with red");
+        headerLabel1.setFont(new Font("Arial", Font.BOLD, 18));
+        headerLabel1.setHorizontalAlignment(SwingConstants.CENTER);
+        headerLabel1.setForeground(new Color(50, 50, 150)); // Dark blue text
+
+        scorePanel.add(headerLabel, BorderLayout.NORTH);
+        scorePanel.add(headerLabel1, BorderLayout.SOUTH);
+        // Add the table in the center
+        scorePanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Add the score panel to mainPanel
+        mainPanel.add(scorePanel, "Score");
+
     }
 
-    public int compareScores(TimeScore score1, TimeScore score2){
-        if(score1.hour>score2.hour){
+
+    public int compareScores(TimeScore score1, TimeScore score2) {
+        if (score1.hour > score2.hour) {
             return 1;
         }
-        if(score1.hour<score2.hour){
+        if (score1.hour < score2.hour) {
             return -1;
         }
-        if(score1.minutes>score2.minutes){
+        if (score1.minutes > score2.minutes) {
             return 1;
         }
-        if(score1.minutes<score2.minutes){
+        if (score1.minutes < score2.minutes) {
             return -1;
         }
-        if(score1.seconds>score2.seconds){
+        if (score1.seconds > score2.seconds) {
             return 1;
         }
-        if(score1.seconds<score2.seconds){
+        if (score1.seconds < score2.seconds) {
             return -1;
         }
-        if(score1.milliseconds>score2.milliseconds){
-            return 1;
-        }
-        if(score1.milliseconds<score2.milliseconds){
-            return -1;
-        }
-        return 0;
+        return Integer.compare(score1.milliseconds, score2.milliseconds);
     }
 
     public void paintGameEndInfo(Graphics2D g2d) {
-        g2d.setFont(UI.fontPause);
-        FontMetrics fm = g2d.getFontMetrics(UI.fontPause);//I am always in awe of what methods are available to us... praise the devs
+        g2d.setFont(UI.fontInstr);
+        g2d.setColor(Color.WHITE);
+        FontMetrics fm = g2d.getFontMetrics(UI.fontInstr);//I am always in awe of what methods are available to us... praise the devs
 
-        String welcomeText = "CONGRATS,";
-        int welcomeWidth = fm.stringWidth(welcomeText);
-        int welcomeX = (screenWidth - welcomeWidth) / 2; // Calculate X-coordinate for centering
-        g2d.drawString(welcomeText, welcomeX, 300);
+        String welcomeText1 = "Your score:";
+        int welcomeWidth1 = fm.stringWidth(welcomeText1);
+        int welcomeX1 = (screenWidth - welcomeWidth1) / 2; // Calculate X-coordinate for centering
+        g2d.drawString(welcomeText1, welcomeX1, 300);
+        g2d.setColor(new Color(64, 191, 34));
+        String score1 = currentScore.hour + "h " + currentScore.minutes + "m " + currentScore.seconds + "s " + currentScore.milliseconds + "ms";
+        int scoreWidth1 = fm.stringWidth(score1);
+        int scoreX1 = (screenWidth - scoreWidth1) / 2; // Calculate X-coordinate for centering
+        g2d.drawString(score1, scoreX1, 350);
+        g2d.setColor(Color.WHITE);
+        String welcomeText2 = "Your PB:";
+        int welcomeWidth2 = fm.stringWidth(welcomeText2);
+        int welcomeX2 = (screenWidth - welcomeWidth2) / 2; // Calculate X-coordinate for centering
+        g2d.drawString(welcomeText2, welcomeX2, 400);
+        g2d.setColor(new Color(197, 44, 17));
+        String score2 = bestTimeScore.hour + "h " + bestTimeScore.minutes + "m " + bestTimeScore.seconds + "s " + bestTimeScore.milliseconds + "ms";
+        int scoreWidth2 = fm.stringWidth(score2);
+        int scoreX2 = (screenWidth - scoreWidth2) / 2; // Calculate X-coordinate for centering
+        g2d.drawString(score2, scoreX2, 450);
 
-        String usernameText = username + "!";
-        int usernameWidth = fm.stringWidth(usernameText);
-        int usernameX = (screenWidth - usernameWidth) / 2; // Calculate X-coordinate for centering
-        g2d.drawString(usernameText, usernameX, 400);
-
+        g2d.setColor(Color.WHITE);
         String instr = "To continue, press Enter";
         int instrWidth = fm.stringWidth(instr);
         int instrX = (screenWidth - instrWidth) / 2; // Calculate X-coordinate for centering
         g2d.drawString(instr, instrX, 500);
-        if(keyHandler.Enter)state = State.GAME_END2;
-    }
-    public void paintGameEndScore(Graphics2D g2d) {
-        //System.out.println("here");
-        // Add table to a JScrollPane
-        //JScrollPane scrollPane = new JScrollPane(scoreTable);
-        this.add(scrollPane);
+        if (keyHandler.Enter) {
 
-        // Set up the JFrame
-
-//        JFrame frame = new JFrame("Scoreboard");
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setSize(400, 300);
-//        frame.setLayout(new BorderLayout());
-//        frame.add(scrollPane, BorderLayout.CENTER);
-//        frame.setVisible(true);
+            state = State.GAME_END2;
+            window.requestFocusInWindow();
+            window.setPreferredSize(new Dimension(400, 390));
+            window.pack();
+            window.setLocationRelativeTo(null);
+            cardLayout.show(mainPanel, "Score");
+        }
     }
+
 }
 
 

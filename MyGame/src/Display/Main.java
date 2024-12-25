@@ -8,7 +8,8 @@ import RegisterForm.Register;
 import javax.swing.*;
 import java.awt.*;
 //TO DO:
-///after updating the tiles: in map update which cause collisions
+
+/// after updating the tiles: in map update which cause collisions
 public class Main {
     //Connection connection = null;
     public static void game1() {
@@ -17,10 +18,10 @@ public class Main {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
         window.setTitle("Lost");
-
-        // Create a CardLayout to switch between panels (awesome class)
+        window.setIconImage(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/GeneralUtility/geo.png")));
+        //CardLayout to switch between panels (awesome)
         JPanel mainPanel = new JPanel(new CardLayout());
-
+        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         // Login Panel
         Login login = new Login(window);
         mainPanel.add(login.LoginPanel, "Login");
@@ -30,9 +31,8 @@ public class Main {
 
         // Game Panel
         MusicPlayer musicPlayer = new MusicPlayer();
-        Panel gamePanel = new Panel(musicPlayer);
+        Panel gamePanel = new Panel(musicPlayer, mainPanel, cardLayout, window);
         mainPanel.add(gamePanel, "Game");
-
 
         window.setContentPane(mainPanel);
         window.setPreferredSize(new Dimension(600, 400)); // Set new size
@@ -40,26 +40,30 @@ public class Main {
         window.setLocationRelativeTo(null);
         window.setVisible(true);
 
-
-        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-
         musicPlayer.playSound(MusicName.ELEVATOR_PERMIT);
 
-        login.setLoginSuccessListener(
-                ()->{
-                    window.setPreferredSize(new Dimension(1152, 960));
-                    window.pack();
-                    window.setLocationRelativeTo(null);
-                    gamePanel.username = login.username;
-                    gamePanel.isEmail = login.isEmail;
-                    // Switch to the game panel
-                    cardLayout.show(mainPanel, "Game");
-                    gamePanel.requestFocusInWindow();
-                    gamePanel.startTheThread();
-                }
-        );
+        login.setLoginSuccessListener(() -> {
+            // weird update order, but, the Game panel must be invoked after a delay since we have a small glitch with the login panel at first
+            // Switch to the "Game" panel first
+            cardLayout.show(mainPanel, "Game");
+
+            gamePanel.username = login.username;
+            gamePanel.isEmail = login.isEmail;
+
+            // Resize
+            SwingUtilities.invokeLater(() -> {
+                window.setPreferredSize(new Dimension(1152, 960));
+                window.revalidate();
+                window.pack();
+                window.setLocationRelativeTo(null);
+            });
+
+            gamePanel.requestFocusInWindow();
+            gamePanel.startTheThread();
+        });
+
         login.setRegisterSuccessListener(
-                ()->{
+                () -> {
                     window.setPreferredSize(new Dimension(600, 500));
                     window.pack();
                     window.setLocationRelativeTo(null);
@@ -70,7 +74,7 @@ public class Main {
                 }
         );
         register.setBackToLoginListener(
-                ()->{
+                () -> {
                     window.setPreferredSize(new Dimension(600, 400));
                     window.pack();
                     window.setLocationRelativeTo(null);
@@ -84,23 +88,6 @@ public class Main {
     public static void main(String[] args) {
         MazeGenerator.main();
         game1();
-        //MapSimulator.simulateMap2();
-        //game2();
-        //StreetViewImage.main();
-        //WebpageScreenshot.main(args);
-        //GoogleLoginScreenshot.main();
     }
 
 }
-/*
-what to add now???
-Text
-menu
-load screen
-the game
-score
- */
-/*
-TO DO
-
- */

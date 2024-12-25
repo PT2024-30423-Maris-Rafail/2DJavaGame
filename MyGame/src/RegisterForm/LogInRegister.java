@@ -16,14 +16,12 @@ public class LogInRegister {
             if (user != null) {
                 if (!password.equals(user.getPassword())) {
                     status = UserLoginStatus.INVALID_PASS;
-                }
-                else status = UserLoginStatus.VALID_USERNAME;
+                } else status = UserLoginStatus.VALID_USERNAME;
 
             } else {//means user1 is not null
-                if(!password.equals(user1.getPassword())) {
+                if (!password.equals(user1.getPassword())) {
                     status = UserLoginStatus.INVALID_PASS;
-                }
-                else status = UserLoginStatus.VALID_EMAIL;
+                } else status = UserLoginStatus.VALID_EMAIL;
             }
         }
         return status;

@@ -6,7 +6,7 @@ import geoGame.ScoreBoardRow;
 import javax.swing.table.AbstractTableModel;
 
 public class ScoreTable extends AbstractTableModel {
-    private final String[] columnNames = {"Place","Username", "Score"};
+    private final String[] columnNames = {"Place", "Username", "Score"};
     private final ScoreBoard scoreBoard;
 
     public ScoreTable(ScoreBoard scoreBoard) {
@@ -27,8 +27,9 @@ public class ScoreTable extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         ScoreBoardRow row = scoreBoard.scoreBoard[rowIndex];
         return switch (columnIndex) {
-            case 0 -> row.getUsername();
-            case 1 -> row.getTime(); // Assuming 'time' is used as the score
+            case 0 -> row.getPlace();
+            case 1 -> row.getUsername(); // Assuming 'time' is used as the score
+            case 2 -> row.getTime();
             default -> null;
         };
     }

@@ -5,7 +5,6 @@ import RegisterForm.User;
 import geoGame.Location;
 import geoGame.ScoreBoard;
 
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.Random;
 
@@ -100,7 +99,6 @@ public class ConnectR {
     }
 
     public int currentTip = 1;
-    private Random random = new Random();
 
     public String getTip() {
 
@@ -178,7 +176,7 @@ public class ConnectR {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("Marked id "+id+" visited");
+        System.out.println("Marked id " + id + " visited");
     }
 
     public void markUNVisited(int id) {
@@ -208,6 +206,7 @@ public class ConnectR {
     }
 
     public int getValidIndex(int size) {
+        Random random = new Random();
         int niggus = random.nextInt(size) + 1;
 
         System.out.println("NIGGUS ESTE " + niggus);
@@ -237,41 +236,27 @@ public class ConnectR {
         }
     }
 
-    ///LOG IN
+    /// LOG IN
     public User getAccountBasedOnUsername(String username) {
-        User user;
-        try {
-            Statement stmt = connection.createStatement();
 
-            String query = "SELECT * FROM users WHERE username = '" + username + "' ;";
-            //System.out.println(random.nextInt(size));
-            ResultSet rs = stmt.executeQuery(query);
-            //System.out.println("negro");
-            if (rs.next()) {
-                user = new User();
-                user.setEmail(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
-                user.setEmail(rs.getString("email"));
-                return user;
-            }
+        String query = "SELECT * FROM users WHERE username = '" + username + "' ;";
 
-            return null;
-        } catch (Exception e) {
-            System.out.println("problema la get user NAME");
-            e.printStackTrace();
-        }
-        return null;
+        return getAccount(query);
     }
 
     public User getAccountBasedOnEmail(String email) {
+
+        String query = "SELECT * FROM users WHERE email = '" + email + "' ;";
+
+        return getAccount(query);
+    }
+
+    public User getAccount(String query) {
         User user;
         try {
             Statement stmt = connection.createStatement();
 
-            String query = "SELECT * FROM users WHERE email = '" + email + "' ;";
-            //System.out.println(random.nextInt(size));
             ResultSet rs = stmt.executeQuery(query);
-            //System.out.println("negro");
             if (rs.next()) {
                 user = new User();
                 user.setEmail(rs.getString("username"));
@@ -287,58 +272,60 @@ public class ConnectR {
         }
         return null;
     }
+
     public int getUserIDEmail(String email) {
         int id;
-        try{
+        try {
             Statement statement = connection.createStatement();
-            String query= "SELECT id FROM users WHERE email = '"+ email + "';";
+            String query = "SELECT id FROM users WHERE email = '" + email + "';";
             ResultSet rs = statement.executeQuery(query);
             if (rs.next()) {
                 id = rs.getInt("id");
                 return id;
             }
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("Error at trying to get user ID");
             e.printStackTrace();
         }
         return 0;
     }
+
     public int getUserIDUsername(String username) {
         int id;
-        try{
+        try {
             Statement statement = connection.createStatement();
-            String query= "SELECT id FROM users WHERE USERNAME = '"+ username + "';";
+            String query = "SELECT id FROM users WHERE USERNAME = '" + username + "';";
             ResultSet rs = statement.executeQuery(query);
-            if(rs.next()){
+            if (rs.next()) {
                 id = rs.getInt("id");
                 return id;
             }
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("Error at trying to get user ID");
             e.printStackTrace();
         }
         return 0;
     }
 
-    public void registerUser(String username, String password, String email) throws SQLException{
+    public void registerUser(String username, String password, String email) throws SQLException {
 
-            Statement stmt = connection.createStatement();
+        Statement stmt = connection.createStatement();
 
-            String query = "INSERT INTO users (username, password, email) VALUES ('"+ username+"','"+password+"','"+email+"');";
+        String query = "INSERT INTO users (username, password, email) VALUES ('" + username + "','" + password + "','" + email + "');";
 
-            stmt.executeUpdate(query);
+        stmt.executeUpdate(query);
     }
+
     public ScoreBoard getScoreBoard() {
         ScoreBoard scoreBoard = new ScoreBoard();
-        try{
+        try {
             Statement stmt = connection.createStatement();
             String query = "SELECT username, CONCAT(hours,'h ',minutes,'m ',seconds,'s ',milliseconds,'ms') AS \"time\" FROM scores JOIN users ON scores.user_id = users.id ORDER BY hours,minutes,seconds,milliseconds limit 10;";
             ResultSet rs = stmt.executeQuery(query);
             int i = 0;
             while (rs.next() && i < 10) {
                 //System.out.println("am ajuns la negrii");
+                scoreBoard.scoreBoard[i].setPlace(i + 1);
                 scoreBoard.scoreBoard[i].setUsername(rs.getString("username"));
                 scoreBoard.scoreBoard[i].setTime(rs.getString("time"));
                 i++;
@@ -350,13 +337,14 @@ public class ConnectR {
         }
         return null;
     }
+
     public TimeScore getBestTime(int user_id) {
         TimeScore timeScore;
-        try{
+        try {
             Statement stmt = connection.createStatement();
-            String query = "SELECT hours, minutes, seconds, milliseconds FROM scores JOIN \"bestScores\" ON scores.score_id = \"bestScores\".score_id WHERE \"bestScores\".user_id = "+user_id+";";
+            String query = "SELECT hours, minutes, seconds, milliseconds FROM scores JOIN \"bestScores\" ON scores.score_id = \"bestScores\".score_id WHERE \"bestScores\".user_id = " + user_id + ";";
             ResultSet rs = stmt.executeQuery(query);
-            if(rs.next()){
+            if (rs.next()) {
                 timeScore = new TimeScore();
                 timeScore.hour = rs.getInt("hours");
                 timeScore.minutes = rs.getInt("minutes");
@@ -366,36 +354,35 @@ public class ConnectR {
             }
 
 
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("Error at trying to get user TIME");
             e.printStackTrace();
         }
         return null;
     }
-    public int addRun(TimeScore timeScore,int userId){
-        try{
+
+    public int addRun(TimeScore timeScore, int userId) {
+        try {
             Statement stmt = connection.createStatement();
             ///Nice one, internet!
-            String query = "INSERT INTO scores(hours, minutes, seconds, milliseconds, user_id)  VALUES ("+timeScore.hour+","+timeScore.minutes+","+timeScore.seconds+","+timeScore.milliseconds+","+userId+ ") RETURNING score_id;";
+            String query = "INSERT INTO scores(hours, minutes, seconds, milliseconds, user_id)  VALUES (" + timeScore.hour + "," + timeScore.minutes + "," + timeScore.seconds + "," + timeScore.milliseconds + "," + userId + ") RETURNING score_id;";
             ResultSet rs = stmt.executeQuery(query);
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getInt("score_id");
             }
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("Error at trying to insert user TIME");
             e.printStackTrace();
         }
         return 0;
     }
-    public void updateBestRun(int scoreId, int userId){
-        try{
+
+    public void updateBestRun(int scoreId, int userId) {
+        try {
             Statement statement = connection.createStatement();
-            String query = "UPDATE \"bestScores\" SET score_id = "+ scoreId +" WHERE user_id = "+userId+";";
+            String query = "UPDATE \"bestScores\" SET score_id = " + scoreId + " WHERE user_id = " + userId + ";";
             statement.executeUpdate(query);
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("Error at trying to insert user TIME");
             e.printStackTrace();
         }

@@ -16,7 +16,7 @@ public class MazeGenerator {
         int[][] maze = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                maze[i][j] = 10+rand.nextInt(3); // Wall1, wall2, wall3
+                maze[i][j] = 10 + rand.nextInt(3); // Wall1, wall2, wall3
             }
         }
 
@@ -36,9 +36,11 @@ public class MazeGenerator {
         minePath(startX, startY, maze, size);
         return maze;
     }
-    private static boolean isVisit(int x){
+
+    private static boolean isVisit(int x) {
         return x != 10 && x != 11 && x != 12;
     }
+
     private static void minePath(int x, int y, int[][] maze, int size) {
         //randomize order of traversal
 
@@ -63,7 +65,7 @@ public class MazeGenerator {
     public static void main() {
         int size = 50; // Size of the maze
         int[][] maze = generateMaze(size);
-        try{
+        try {
             FileWriter fw = new FileWriter("map2.txt");
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
@@ -76,8 +78,7 @@ public class MazeGenerator {
                 //System.out.println("");
             }
             fw.close();
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             System.out.println("Error writing file");
             e.printStackTrace();
         }

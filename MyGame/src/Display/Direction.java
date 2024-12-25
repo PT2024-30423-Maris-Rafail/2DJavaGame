@@ -1,5 +1,5 @@
 package Display;
 
 public enum Direction {
-    UP, DOWN, LEFT, RIGHT,STOP;
+    UP, DOWN, LEFT, RIGHT, STOP;
 }

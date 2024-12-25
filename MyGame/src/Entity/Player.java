@@ -9,9 +9,8 @@ import GameState.State;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.sql.SQLOutput;
+import java.util.Objects;
 import javax.imageio.ImageIO;
-import javax.sound.sampled.*;
 
 public class Player extends Entity {
     Panel panel;
@@ -22,14 +21,14 @@ public class Player extends Entity {
     public boolean hasDarkCompass = false;
     public int fragmentNumber = 3;
     //TODO MAKE FRAGMENT NUMBER 0
-    Clip clipOutOfB,clipSpuderMan;
     public int objectOfCol;
+
     public Player(Panel panel, KeyboardInputSolver keyHandler, int speedMultiplier) {
         this.panel = panel;
         this.keyHandler = keyHandler;
 
-        playerX = panel.screenWidth/2 - (panel.actualSize)/2;//subtract bc the drawing begins from the up left corner
-        playerY = panel.screenHeight/2 - (panel.actualSize)/2;
+        playerX = panel.screenWidth / 2 - (panel.actualSize) / 2;//subtract bc the drawing begins from the up left corner
+        playerY = panel.screenHeight / 2 - (panel.actualSize) / 2;
 
         initialize(speedMultiplier);
         getPlayerImage();
@@ -40,57 +39,56 @@ public class Player extends Entity {
     public void initialize(int speedMultiplier) {
         //the collision: take a 7*7 circle in the middle
         //collisionUpLeft
-        mapX = panel.actualSize*24;//middle of map
-        mapY = panel.actualSize*24;
+        mapX = panel.actualSize * 24;//middle of map
+        mapY = panel.actualSize * 24;
         speed = speedMultiplier;
         direction = Direction.STOP;
-        collisionX=26;
-        collisionY=60;
-        heightCollision=30;
-        widthCollision=42;
+        collisionX = 26;
+        collisionY = 60;
+        heightCollision = 30;
+        widthCollision = 42;
 
     }
-    public boolean isOutsideOfBounds(State state){
+
+    public boolean isOutsideOfBounds(State state) {
         //System.out.println(mapY+" "+(panel.map.wrldHeight[panel.currentMap] - panel.actualSize/2));
         //System.out.println(panel.map.wrldHeight[panel.currentMap]+" "+panel.map.wrldWidth[panel.currentMap]);
-        if(mapY >= panel.map.wrldHeight[panel.currentMap] -panel.actualSize ) {
-            if((state == State.MAP1 || state == State.MAP1_PORTAL_OPENED )){
+        if (mapY >= panel.map.wrldHeight[panel.currentMap] - panel.actualSize) {
+            if ((state == State.MAP1 || state == State.MAP1_PORTAL_OPENED)) {
                 System.out.println("cASE1");
 
                 return true;
-            }
-            else collides=true;
+            } else collides = true;
         }
-        if(mapY <=0 && (state == State.MAP1 || panel.state == State.MAP1_PORTAL_OPENED) && (mapX/panel.actualSize != 24 && mapX/panel.actualSize != 23  && mapX/panel.actualSize != 22  && mapX/panel.actualSize != 25)){
+        if (mapY <= 0 && (state == State.MAP1 || panel.state == State.MAP1_PORTAL_OPENED) && (mapX / panel.actualSize != 24 && mapX / panel.actualSize != 23 && mapX / panel.actualSize != 22 && mapX / panel.actualSize != 25)) {
             System.out.println("cASE2");
             return true;
         }
-        if(mapX >= panel.map.wrldWidth[panel.currentMap]- panel.actualSize) {
+        if (mapX >= panel.map.wrldWidth[panel.currentMap] - panel.actualSize) {
             if (state == State.MAP1 || state == State.MAP1_PORTAL_OPENED) {
                 System.out.println("case3");
                 return true;
-            }
-            else collides=true;
+            } else collides = true;
         }
-        if(mapX <= 10 && (state == State.MAP1 || panel.state == State.MAP1_PORTAL_OPENED))return true;
-        return false;
+        return mapX <= 10 && (state == State.MAP1 || panel.state == State.MAP1_PORTAL_OPENED);
     }
-    public void updatePlayerWithBoolean(State state)  {
+
+    public void updatePlayerWithBoolean(State state) {
         //System.out.println("MOOOOOOOOOR");
-        if(mapY/panel.actualSize==0 && mapX/panel.actualSize==24 && (hasDarkCompass|| hasCompass) && state==State.MAP1_PORTAL_OPENED){
-            panel.state=State.MAP2;
+        if (mapY / panel.actualSize == 0 && mapX / panel.actualSize == 24 && (hasDarkCompass || hasCompass) && state == State.MAP1_PORTAL_OPENED) {
+            panel.state = State.MAP2;
             panel.musicPlayer.stopSound(MusicName.PortalSFX);
 //            mapY=panel.actualSize*24;
 //            mapX=panel.actualSize*24;
-            mapY=panel.actualSize;
-            mapX=panel.actualSize;
-            panel.currentMap=1;
+            mapY = panel.actualSize;
+            mapX = panel.actualSize;
+            panel.currentMap = 1;
             //hasDarkCompass=false;
             //hasCompass=false;
         }
-        if(panel.playedSong==0){
-            if(mapY/panel.actualSize==22 && mapX/panel.actualSize == 23){
-                panel.playedSong=1;
+        if (panel.playedSong == 0) {
+            if (mapY / panel.actualSize == 22 && mapX / panel.actualSize == 23) {
+                panel.playedSong = 1;
 //                Clip clipi = panel.musicPlayer.playIntro();
 //                //System.out.println("Suna");
 //                clipi.start();
@@ -99,160 +97,124 @@ public class Player extends Entity {
                 panel.musicPlayer.playSound(MusicName.Spuder_Man_Fade);
             }
         }
-        Clip portalSound = null;// i tried to make a method to call, but i needed the sound to be played again if the condition was met
 
+        if (isOutsideOfBounds(state)) {
+            //System.out.println("put");
+            mapY = panel.actualSize * 23;
+            mapX = panel.actualSize * 23;
+            //if(portalSound == null) portalSound= panel.musicPlayer.tpToStart();
 
-            if (isOutsideOfBounds(state)) {
-                //System.out.println("put");
-                mapY = panel.actualSize * 23;
-                mapX = panel.actualSize * 23;
-                //if(portalSound == null) portalSound= panel.musicPlayer.tpToStart();
-
-                //System.out.println("NEGRO");
+            //System.out.println("NEGRO");
 //                clipOutOfB.setFramePosition(0);
 //                clipOutOfB.start();
-                panel.musicPlayer.playSound(MusicName.Whoosh);
+            panel.musicPlayer.playSound(MusicName.Whoosh);
 
-            } else if(portalSound!=null)portalSound.stop();
-
-
-            if(!isOutsideOfBounds (state) && (keyHandler.goUp || keyHandler.goDown || keyHandler.goLeft || keyHandler.goRight)) {
-                //System.out.println(panel.map.tiles[1].isCollision + " " + panel.map.tiles[1].imageName);
-                if (keyHandler.goUp) {
-                    //mapY-=speed;
-                    direction = Direction.UP;
-                }
-                if (keyHandler.goDown) {
-
-                    direction = Direction.DOWN;//mapY+=speed;
-                }
-                if (keyHandler.goLeft) {
-
-                    direction = Direction.LEFT;//mapX-=speed;
-
-                }
-                if (keyHandler.goRight) {
-                    direction = Direction.RIGHT;//mapX+=speed;
-
-                }
-                collides = false;
-
-                panel.checkCollision.checkTile(this);//CHECK COLLISION
-                 objectOfCol = panel.checkCollision.whichItem(this);
-                //System.out.println(objectOfCol);
-                if(objectOfCol!=-1){
-                    //System.out.println("OBJECT "+objectOfCol);
-                    if(panel.state == State.MAP2){
+        }
 
 
-                                panel.playsGeo = true;
-                                panel.previousState = panel.state;
-                                panel.state = State.PLAYS_GEO;
+        if (!isOutsideOfBounds(state) && (keyHandler.goUp || keyHandler.goDown || keyHandler.goLeft || keyHandler.goRight)) {
+            //System.out.println(panel.map.tiles[1].isCollision + " " + panel.map.tiles[1].imageName);
+            if (keyHandler.goUp) {
+                //mapY-=speed;
+                direction = Direction.UP;
+            }
+            if (keyHandler.goDown) {
 
-                                //fragmentNumber++;
-                                keyHandler.setAllFalse();
+                direction = Direction.DOWN;//mapY+=speed;
+            }
+            if (keyHandler.goLeft) {
+
+                direction = Direction.LEFT;//mapX-=speed;
+
+            }
+            if (keyHandler.goRight) {
+                direction = Direction.RIGHT;//mapX+=speed;
+
+            }
+            collides = false;
+
+            panel.checkCollision.checkTile(this);//CHECK COLLISION
+            objectOfCol = panel.checkCollision.whichItem(this);
+            //System.out.println(objectOfCol);
+            if (objectOfCol != -1) {
+                //System.out.println("OBJECT "+objectOfCol);
+                if (panel.state == State.MAP2) {
 
 
-                        //TO IMPLEMENT HERE FOR THE FRAGMENTS !!!
-                    }
-                    else{
-                        switch(objectOfCol){
-                            case 0:
-                                panel.objectManager.items[0] = null;
-                                panel.objectManager.items[1] = null;
-                                panel.objectManager.items[2] = null;
+                    panel.playsGeo = true;
+                    panel.previousState = panel.state;
+                    panel.state = State.PLAYS_GEO;
 
-                                hasCompass = true;
-                                panel.musicPlayer.playSound(MusicName.PortalSFX);
-                                panel.state = State.MAP1_PORTAL_OPENED;
-                                break;
+                    //fragmentNumber++;
+                    keyHandler.setAllFalse();
 
-                            case 1:
-                                panel.playedSong=1;
-                                panel.objectManager.items[0] = null;
-                                panel.objectManager.items[1] = null;
-                                panel.objectManager.items[2] = null;
 
-                                hasDarkCompass = true;
-                                panel.musicPlayer.playSound(MusicName.PortalSFX);
-                                panel.state = State.MAP1_PORTAL_OPENED;
-                                break;
-                            case 2:
-                                if(hasDarkCompass || hasCompass){
+                    //TO IMPLEMENT HERE FOR THE FRAGMENTS !!!
+                } else {
+                    switch (objectOfCol) {
+                        case 0:
+                            panel.objectManager.items[0] = null;
+                            panel.objectManager.items[1] = null;
+                            panel.objectManager.items[2] = null;
 
-                                }
-                        }
-
-                    }
-                }
-
-                if(collides) System.out.println("Collision Detected");
-                //System.out.println("ce pisici");
-                collides = false;
-                //TODO remove the collides = false
-                if (hasDarkCompass || !collides) {
-
-                    //System.out.println("can move");
-                    //System.out.println(mapY+" "+mapX+" "+(mapY/panel.actualSize)+" "+(mapX/panel.actualSize));
-                    switch (direction) {
-                        case UP:
-                            if (mapY - speed >= -panel.actualSize / 2) mapY -= speed;
+                            hasCompass = true;
+                            panel.musicPlayer.playSound(MusicName.PortalSFX);
+                            panel.state = State.MAP1_PORTAL_OPENED;
                             break;
-                        case DOWN:
-                            if (mapY + speed < panel.map.wrldHeight[panel.currentMap]-panel.actualSize* panel.currentMap) mapY += speed;
-                            break;
-                        case LEFT:
-                            if (mapX - speed >= 0) mapX -= speed;
-                            break;
-                        case RIGHT:
-                            if (mapX + speed < panel.map.wrldWidth[panel.currentMap]-2*panel.actualSize/3*panel.currentMap) mapX += speed;
+
+                        case 1:
+                            panel.playedSong = 1;
+                            panel.objectManager.items[0] = null;
+                            panel.objectManager.items[1] = null;
+                            panel.objectManager.items[2] = null;
+
+                            hasDarkCompass = true;
+                            panel.musicPlayer.playSound(MusicName.PortalSFX);
+                            panel.state = State.MAP1_PORTAL_OPENED;
                             break;
 
                     }
 
-                }
-                //System.out.println(hasDarkCompass+" "+collides);
-                imageCounter++;
-                if (imageCounter > 13) {
-                    if (whichImage == 1) whichImage = 2;
-                    else if (whichImage == 2) whichImage = 1;
-                    imageCounter = 0;
                 }
             }
 
-    }
+            if (collides) System.out.println("Collision Detected");
+            //System.out.println("ce pisici");
+            collides = false;
+            //TODO remove the collides = false
+            if (hasDarkCompass || !collides) {
 
-    public void updatePlayer() {
+                //System.out.println("can move");
+                //System.out.println(mapY+" "+mapX+" "+(mapY/panel.actualSize)+" "+(mapX/panel.actualSize));
+                switch (direction) {
+                    case UP:
+                        if (mapY - speed >= -panel.actualSize / 2) mapY -= speed;
+                        break;
+                    case DOWN:
+                        if (mapY + speed < panel.map.wrldHeight[panel.currentMap] - panel.actualSize * panel.currentMap)
+                            mapY += speed;
+                        break;
+                    case LEFT:
+                        if (mapX - speed >= 0) mapX -= speed;
+                        break;
+                    case RIGHT:
+                        if (mapX + speed < panel.map.wrldWidth[panel.currentMap] - 2 * panel.actualSize / 3 * panel.currentMap)
+                            mapX += speed;
+                        break;
 
-        switch (keyHandler.getDirection()) {
-            case LEFT:
-                direction = Direction.LEFT;
-                mapX -= speed;
-                break;
-            case RIGHT:
-                direction = Direction.RIGHT;
-                mapX += speed;
-                break;
-            case UP:
-                direction = Direction.UP;
-                mapY -= speed;
-                break;
-            case DOWN:
-                direction = Direction.DOWN;
-                mapY += speed;
-                break;
-            case STOP:
-            default:
-                break;
+                }
+
+            }
+            //System.out.println(hasDarkCompass+" "+collides);
+            imageCounter++;
+            if (imageCounter > 13) {
+                if (whichImage == 1) whichImage = 2;
+                else if (whichImage == 2) whichImage = 1;
+                imageCounter = 0;
+            }
         }
-        if (keyHandler.getDirection() != Direction.STOP) imageCounter++;
-        if (imageCounter > 13) {
-            if (whichImage == 1) whichImage = 2;
-            else if (whichImage == 2) whichImage = 1;
-            imageCounter = 0;
-        }
-    }
 
+    }
 
     public void drawPlayer(Graphics g2d) {
         //g2d.setColor(Color.WHITE);
@@ -294,14 +256,14 @@ public class Player extends Entity {
 
     public void getPlayerImage() {
         try {
-            up1 = ImageIO.read(getClass().getResourceAsStream("/player/up1.png"));
-            up2 = ImageIO.read(getClass().getResourceAsStream("/player/up2.png"));
-            down1 = ImageIO.read(getClass().getResourceAsStream("/player/down1.png"));
-            down2 = ImageIO.read(getClass().getResourceAsStream("/player/down2.png"));
-            left1 = ImageIO.read(getClass().getResourceAsStream("/player/left1.png"));
-            left2 = ImageIO.read(getClass().getResourceAsStream("/player/left2.png"));
-            right1 = ImageIO.read(getClass().getResourceAsStream("/player/right1.png"));
-            right2 = ImageIO.read(getClass().getResourceAsStream("/player/right2.png"));
+            up1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/up1.png")));
+            up2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/up2.png")));
+            down1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/down1.png")));
+            down2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/down2.png")));
+            left1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/left1.png")));
+            left2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/left2.png")));
+            right1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/right1.png")));
+            right2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/right2.png")));
 
 
         } catch (IOException e) {

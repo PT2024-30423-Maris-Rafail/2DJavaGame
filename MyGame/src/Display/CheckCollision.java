@@ -3,7 +3,6 @@ package Display;
 import Entity.Entity;
 import GameState.State;
 import Items.Item;
-import Items.ObjectManager;
 
 public class CheckCollision {
     Panel panel;
@@ -15,11 +14,9 @@ public class CheckCollision {
     //public void CheckItem(ObjectManager objectManager);
     public void checkTile(Entity entity) {
 
-        int whichMap=0;
-        switch(panel.state){
-            case MAP1,MAP1_PORTAL_OPENED -> whichMap=0;
-            case MAP2 -> whichMap=1;
-        }
+        int whichMap = 0;
+        if(panel.state == State.MAP2)whichMap = 1;
+
         int leftX, rightX, topY, bottomY;//coordinates on the world map
         leftX = entity.mapX + entity.collisionX;
         rightX = entity.mapX + entity.collisionX + entity.widthCollision;
@@ -27,7 +24,7 @@ public class CheckCollision {
         bottomY = entity.mapY + entity.collisionY + entity.heightCollision;
         //System.out.println("here");
         if (!((leftX - entity.speed >= 0) && (rightX + entity.speed <= panel.map.wrldHeight[whichMap]) && (topY - entity.speed >= 0) && (bottomY + entity.speed <= panel.map.wrldWidth[whichMap])
-        )){
+        )) {
             System.out.println("here");
             //entity.collides=true;
             return;
@@ -107,7 +104,7 @@ public class CheckCollision {
                                 entitySolidX + panel.player.widthCollision < itemSolidX || entitySolidX > itemSolidX + itemWidth)) {
                             //System.out.println("Left collision");
                             index = i;
-                            if(items[i].collision)entity.collides = true;
+                            if (items[i].collision) entity.collides = true;
                         }
 
                         //if(itemSolidX>entitySolidX) {System.out.println("Left collision");}
@@ -120,7 +117,7 @@ public class CheckCollision {
                                 entitySolidX + panel.player.widthCollision < itemSolidX || entitySolidX > itemSolidX + itemWidth)) {
                             //System.out.println("Right collision");
                             index = i;
-                            if(items[i].collision)entity.collides = true;
+                            if (items[i].collision) entity.collides = true;
                         }
                         entitySolidX -= panel.player.speed;
 
@@ -132,7 +129,7 @@ public class CheckCollision {
                                 entitySolidX + panel.player.widthCollision < itemSolidX || entitySolidX > itemSolidX + itemWidth)) {
                             //System.out.println("UP collision");
                             index = i;
-                            if(items[i].collision)entity.collides = true;
+                            if (items[i].collision) entity.collides = true;
                         }
                         entitySolidY += panel.player.speed;
 
@@ -144,7 +141,7 @@ public class CheckCollision {
                                 entitySolidX + panel.player.widthCollision < itemSolidX || entitySolidX > itemSolidX + itemWidth)) {
                             //System.out.println("Down collision");
                             index = i;
-                            if(items[i].collision)entity.collides = true;
+                            if (items[i].collision) entity.collides = true;
                         }
                         entitySolidY -= panel.player.speed;
 
@@ -164,7 +161,8 @@ public class CheckCollision {
         //we check which is the index of the item we encounter
         index = checksColItemArray(entity, panel.objectManager.items);
         //in map 1 we have different behaviors depending on the element we walked on
-        if (index == -1  && panel.state == State.MAP2   ) index = checksColItemArray(entity, panel.objectManager.fragments.fragments);
+        if (index == -1 && panel.state == State.MAP2)
+            index = checksColItemArray(entity, panel.objectManager.fragments.fragments);
         //in map 2 all tiles open the geoguesser, but we must know the index of the current item, since we might need to
         //reposition it later
         return index;

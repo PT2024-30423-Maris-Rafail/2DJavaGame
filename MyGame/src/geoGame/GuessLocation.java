@@ -1,34 +1,35 @@
 
-        package geoGame;
+package geoGame;
 
 import Display.Panel;
-import GameState.State;
-
-import java.util.Scanner;
 
 public class GuessLocation {
     private String country;
     final Panel panel;
     int[] locations;
+
     public GuessLocation(Panel panel) {
         this.panel = panel;
         locations = new int[5];
     }
+
     public void setCountry(String country) {
         this.country = country;
     }
+
     public void setLocations(int current) {
         locations[panel.guesses] = current;
-        System.out.println("For guess #"+panel.guesses+": " + current);
+        System.out.println("For guess #" + panel.guesses + ": " + current);
     }
-    public void guess(int currentFragment){
-            panel.headingSlider.setVisible(true);
+
+    public void guess(int currentFragment) {
+        panel.headingSlider.setVisible(true);
 //        System.out.println("Guessing " + country);
 //        Scanner scanner = new Scanner(System.in);
 //        String currentGuess = scanner.nextLine();
         String currentGuess = null;
-        double timeBeforeGeo=0;
-        double timeAfterGeo=0;
+        double timeBeforeGeo = 0;
+        double timeAfterGeo = 0;
         synchronized (panel.gameThread) {
             try {
                 //System.out.println("mata");
@@ -45,26 +46,24 @@ public class GuessLocation {
                 e.printStackTrace();
             }
         }
-        if(currentGuess!=null && currentGuess.equals(country)){
+        if (currentGuess != null && currentGuess.equals(country)) {
 
             System.out.println("You guessed the correct guess!");
             panel.correctGuesses++;
         }
-        if(panel.correctGuesses == 1){
-            if(panel.player.fragmentNumber == 3) panel.UI.timeInSec +=(timeAfterGeo - timeBeforeGeo)/1000000000.0;
+        if (panel.correctGuesses == 1) {
+            if (panel.player.fragmentNumber == 3) panel.UI.timeInSec += (timeAfterGeo - timeBeforeGeo) / 1000000000.0;
             panel.playsGeo = false;
             panel.state = panel.previousState;
             panel.setFocusable(true); // Allow the panel to gain focus
             panel.requestFocusInWindow(); // Request focus for key events
             panel.player.fragmentNumber++;
             panel.firstContact = true;
-            for(int i = 0;i<panel.guesses;i++)panel.dBConnection.markUNVisited(locations[i]);
-            if(!panel.player.hasDarkCompass){
+            for (int i = 0; i < panel.guesses; i++) panel.dBConnection.markUNVisited(locations[i]);
+            if (!panel.player.hasDarkCompass) {
                 panel.objectManager.fragments.fragments[currentFragment] = null;
-            }
-
-            else{
-                panel.map.tilesManager[1][panel.objectManager.fragments.fragments[currentFragment].mapX/panel.actualSize][panel.objectManager.fragments.fragments[currentFragment].mapY/panel.actualSize] = 1;
+            } else {
+                panel.map.tilesManager[1][panel.objectManager.fragments.fragments[currentFragment].mapX / panel.actualSize][panel.objectManager.fragments.fragments[currentFragment].mapY / panel.actualSize] = 1;
                 panel.itemSetter.setFragment(currentFragment);
             }
 
@@ -72,16 +71,15 @@ public class GuessLocation {
             panel.UI.time = System.currentTimeMillis();
             panel.UI.correctGuess = true;
             panel.headingSlider.setVisible(false);
-        }
-        else if(panel.guesses == 5){
+        } else if (panel.guesses == 5) {
             panel.playsGeo = false;
             panel.state = panel.previousState;
             panel.setFocusable(true); // Allow the panel to gain focus
             panel.requestFocusInWindow(); // Request focus for key events
             //panel.player.fragmentNumber++;
             panel.firstContact = true;
-            for(int i = 0;i<panel.guesses;i++)panel.dBConnection.markUNVisited(locations[i]);
-            panel.map.tilesManager[1][panel.objectManager.fragments.fragments[currentFragment].mapX/panel.actualSize][panel.objectManager.fragments.fragments[currentFragment].mapY/panel.actualSize] = 1;
+            for (int i = 0; i < panel.guesses; i++) panel.dBConnection.markUNVisited(locations[i]);
+            panel.map.tilesManager[1][panel.objectManager.fragments.fragments[currentFragment].mapX / panel.actualSize][panel.objectManager.fragments.fragments[currentFragment].mapY / panel.actualSize] = 1;
             panel.itemSetter.setFragment(currentFragment);
             panel.textFieldPanel.setVisible(false);
             panel.headingSlider.setVisible(false);
@@ -94,7 +92,7 @@ public class GuessLocation {
 
         panel.isReady = false;
         panel.headingSlider.setValue(0);
-        System.out.println("CG: "+panel.correctGuesses+" G:"+panel.guesses);
+        System.out.println("CG: " + panel.correctGuesses + " G:" + panel.guesses);
 //        if(panel.correctGuesses == 3){
 //            panel.playsGeo = false;
 //            panel.player.fragmentNumber++;

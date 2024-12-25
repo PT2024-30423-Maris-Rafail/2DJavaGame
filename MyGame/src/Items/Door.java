@@ -1,18 +1,17 @@
 package Items;
 
 import javax.imageio.ImageIO;
-import java.io.File;
+import java.util.Objects;
 
-public class Door extends Item{
-    public Door(){
+public class Door extends Item {
+    public Door() {
 
-            name="DoorN.png";
+        name = "DoorN.png";
 
-        try{
+        try {
 
-            image  = ImageIO.read(getClass().getResourceAsStream("/Objects/DoorN.png"));
-        }
-        catch(Exception e){
+            image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/Objects/DoorN.png")));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

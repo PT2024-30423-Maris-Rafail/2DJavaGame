@@ -1,25 +1,23 @@
 package Map;
 
 import Display.Panel;
-import GameState.State;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.*;
+
 import ConnecToDB.*;
+
 public class Map {
     Panel panel;
     public Tile[][] tiles;
-    //BufferedImage[] allTiles;
 
-    String folderPath ;
-    String map;
     File folder;
     public File[][] images;//I officially love java!!!
 
     public int[][][] tilesManager;
-    public int wrldCol[],wrldRow[];
-    public int wrldWidth[],wrldHeight[];
+    public int[] wrldCol, wrldRow;
+    public int[] wrldWidth, wrldHeight;
 
     public Map(Panel panel) {
 
@@ -28,16 +26,16 @@ public class Map {
         //System.out.println(panel.nrOfMaps);
         wrldCol = new int[panel.nrOfMaps];
         wrldRow = new int[panel.nrOfMaps];
-        wrldCol[0]=panel.wordlCol[0];
-        wrldRow[0]=panel.wordlRow[0];
-        wrldCol[1]=panel.wordlCol[1];
-        wrldRow[1]=panel.wordlRow[1];
-        wrldWidth=new int[panel.nrOfMaps];
-        wrldHeight=new int[panel.nrOfMaps];
-        wrldWidth[0]=wrldCol[0]*panel.actualSize;
-        wrldHeight[0]=wrldRow[0]*panel.actualSize;
-        wrldWidth[1]=wrldCol[1]*panel.actualSize;
-        wrldHeight[1]=wrldRow[1]*panel.actualSize;
+        wrldCol[0] = panel.wordlCol[0];
+        wrldRow[0] = panel.wordlRow[0];
+        wrldCol[1] = panel.wordlCol[1];
+        wrldRow[1] = panel.wordlRow[1];
+        wrldWidth = new int[panel.nrOfMaps];
+        wrldHeight = new int[panel.nrOfMaps];
+        wrldWidth[0] = wrldCol[0] * panel.actualSize;
+        wrldHeight[0] = wrldRow[0] * panel.actualSize;
+        wrldWidth[1] = wrldCol[1] * panel.actualSize;
+        wrldHeight[1] = wrldRow[1] * panel.actualSize;
         //int a=
         //wrldHeight = panel.actualSize * wrldRow;
         //wrldWidth = panel.actualSize * wrldCol;
@@ -45,14 +43,14 @@ public class Map {
         //images = new File[panel.nrOfMaps][100];
         images = new File[panel.nrOfMaps][];
         folder = new File("images/Tiles/voiD");
-        images[0] = folder.listFiles((dir, name) -> name.endsWith(".png"));
+        images[0] = folder.listFiles((_, name) -> name.endsWith(".png"));
         folder = new File("images/Tiles/overworld");
-        images[1] = folder.listFiles((dir, name) -> name.endsWith(".png"));
+        images[1] = folder.listFiles((_, name) -> name.endsWith(".png"));
         //System.out.println(images[1][0].getName());
         tiles = new Tile[panel.nrOfMaps][];
         tilesManager = new int[panel.nrOfMaps][][];
-        createMap("Maps/map1.txt",0);
-        createMap("Maps/map2.txt",1);
+        createMap("Maps/map1.txt", 0);
+        createMap("Maps/map2.txt", 1);
 
 //        for(int i=0;i<panel.nrOfMaps;i++) {
 //            createMap(map,panel.currentMap);
@@ -60,8 +58,9 @@ public class Map {
 
 
     }
+
     //tilesManager = new int[panel.nrOfMaps][wrldCol[whichMap]+1][wrldRow[whichMap]+1];
-    public void createMap(String path,int whichMap) {
+    public void createMap(String path, int whichMap) {
         tilesManager[whichMap] = new int[wrldCol[whichMap]][wrldRow[whichMap]];
         //allTiles = new BufferedImage[images.length];
         //System.out.println(images.length);
@@ -70,12 +69,13 @@ public class Map {
             tiles[whichMap][i] = new Tile();
         }
         //which tiles can't be passed through?
-        tiles[whichMap][0].isCollision=true;
-        for(int i=2 ;i<=6;i++) tiles[whichMap][i].isCollision=true;
+        tiles[whichMap][0].isCollision = true;
+        for (int i = 2; i <= 6; i++) tiles[whichMap][i].isCollision = true;
 
         preloadImages(whichMap);
         try {
             InputStream read = getClass().getClassLoader().getResourceAsStream(path);
+            assert read != null;
             BufferedReader fscanf = new BufferedReader(new InputStreamReader(read));
 
             int col = 0;
@@ -118,16 +118,16 @@ public class Map {
     }
 
 
+    int which = 0;
 
-    int which=0;
     public void drawTiles(Graphics2D g2d) {
         int col = 0;
         int row = 0;
 
-        if(!panel.player.keyHandler.PAUSED){
-            switch(panel.state){
-                case MAP1,MAP1_PORTAL_OPENED -> which=0;
-                case MAP2 -> which=1;
+        if (!panel.player.keyHandler.PAUSED) {
+            switch (panel.state) {
+                case MAP1, MAP1_PORTAL_OPENED -> which = 0;
+                case MAP2 -> which = 1;
 
             }
         }
@@ -146,8 +146,8 @@ public class Map {
             int tileNum = tilesManager[which][col][row];
             //System.out.println(tileNum);
             //System.out.println(mapX + " " + panel.player.mapX + " " + panel.player.playerX);
-            if(mapX >= panel.player.mapX-panel.player.playerX - panel.actualSize && mapX <= panel.player.mapX+panel.player.playerX + panel.actualSize &&
-                    mapY >= panel.player.mapY-panel.player.playerY - panel.actualSize && mapY <= panel.player.mapY+panel.player.playerY + panel.actualSize) {
+            if (mapX >= panel.player.mapX - panel.player.playerX - panel.actualSize && mapX <= panel.player.mapX + panel.player.playerX + panel.actualSize &&
+                    mapY >= panel.player.mapY - panel.player.playerY - panel.actualSize && mapY <= panel.player.mapY + panel.player.playerY + panel.actualSize) {
                 g2d.drawImage(tiles[which][tileNum].image, screenX, screenY, panel.actualSize, panel.actualSize, null);
             }
 
