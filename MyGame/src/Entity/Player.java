@@ -19,7 +19,7 @@ public class Player extends Entity {
     public final int playerY;
     public boolean hasCompass = false;
     public boolean hasDarkCompass = false;
-    public int fragmentNumber = 3;
+    public int fragmentNumber = 0;
     //TODO MAKE FRAGMENT NUMBER 0
     public int objectOfCol;
 
@@ -42,6 +42,7 @@ public class Player extends Entity {
         mapX = panel.actualSize * 24;//middle of map
         mapY = panel.actualSize * 24;
         speed = speedMultiplier;
+        //System.out.println(speed);
         direction = Direction.STOP;
         collisionX = 26;
         collisionY = 60;
@@ -55,18 +56,18 @@ public class Player extends Entity {
         //System.out.println(panel.map.wrldHeight[panel.currentMap]+" "+panel.map.wrldWidth[panel.currentMap]);
         if (mapY >= panel.map.wrldHeight[panel.currentMap] - panel.actualSize) {
             if ((state == State.MAP1 || state == State.MAP1_PORTAL_OPENED)) {
-                System.out.println("cASE1");
+                //System.out.println("cASE1");
 
                 return true;
             } else collides = true;
         }
         if (mapY <= 0 && (state == State.MAP1 || panel.state == State.MAP1_PORTAL_OPENED) && (mapX / panel.actualSize != 24 && mapX / panel.actualSize != 23 && mapX / panel.actualSize != 22 && mapX / panel.actualSize != 25)) {
-            System.out.println("cASE2");
+            //System.out.println("cASE2");
             return true;
         }
         if (mapX >= panel.map.wrldWidth[panel.currentMap] - panel.actualSize) {
             if (state == State.MAP1 || state == State.MAP1_PORTAL_OPENED) {
-                System.out.println("case3");
+                //System.out.println("case3");
                 return true;
             } else collides = true;
         }
@@ -77,12 +78,14 @@ public class Player extends Entity {
         //System.out.println("MOOOOOOOOOR");
         if (mapY / panel.actualSize == 0 && mapX / panel.actualSize == 24 && (hasDarkCompass || hasCompass) && state == State.MAP1_PORTAL_OPENED) {
             panel.state = State.MAP2;
+            panel.playedSong = 1;
             panel.musicPlayer.stopSound(MusicName.PortalSFX);
 //            mapY=panel.actualSize*24;
 //            mapX=panel.actualSize*24;
-            mapY = panel.actualSize;
-            mapX = panel.actualSize;
+            mapY = panel.actualSize*25;
+            mapX = panel.actualSize*25;
             panel.currentMap = 1;
+
             //hasDarkCompass=false;
             //hasCompass=false;
         }
@@ -100,13 +103,9 @@ public class Player extends Entity {
 
         if (isOutsideOfBounds(state)) {
             //System.out.println("put");
-            mapY = panel.actualSize * 23;
-            mapX = panel.actualSize * 23;
-            //if(portalSound == null) portalSound= panel.musicPlayer.tpToStart();
+            mapY = panel.actualSize * 24;
+            mapX = panel.actualSize * 24;
 
-            //System.out.println("NEGRO");
-//                clipOutOfB.setFramePosition(0);
-//                clipOutOfB.start();
             panel.musicPlayer.playSound(MusicName.Whoosh);
 
         }
@@ -177,13 +176,14 @@ public class Player extends Entity {
 
                 }
             }
-
-            if (collides) System.out.println("Collision Detected");
+            if(panel.isAdmin)collides = false;
+            //if (collides) System.out.println("Collision Detected");
+            //if(panel.isAdmin) System.out.println("has dark compass");
             //System.out.println("ce pisici");
-            collides = false;
+            //collides = false;
             //TODO remove the collides = false
             if (hasDarkCompass || !collides) {
-
+                //System.out.println(panel.map.wrldWidth[panel.currentMap]);
                 //System.out.println("can move");
                 //System.out.println(mapY+" "+mapX+" "+(mapY/panel.actualSize)+" "+(mapX/panel.actualSize));
                 switch (direction) {
@@ -191,6 +191,7 @@ public class Player extends Entity {
                         if (mapY - speed >= -panel.actualSize / 2) mapY -= speed;
                         break;
                     case DOWN:
+                        //without subtracting a tile, we can get out of bounds and walk on the void
                         if (mapY + speed < panel.map.wrldHeight[panel.currentMap] - panel.actualSize * panel.currentMap)
                             mapY += speed;
                         break;
@@ -198,7 +199,7 @@ public class Player extends Entity {
                         if (mapX - speed >= 0) mapX -= speed;
                         break;
                     case RIGHT:
-                        if (mapX + speed < panel.map.wrldWidth[panel.currentMap] - 2 * panel.actualSize / 3 * panel.currentMap)
+                        if (mapX + speed < panel.map.wrldWidth[panel.currentMap] - panel.actualSize  * panel.currentMap)
                             mapX += speed;
                         break;
 

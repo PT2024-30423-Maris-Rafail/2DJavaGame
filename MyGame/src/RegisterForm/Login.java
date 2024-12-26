@@ -101,7 +101,7 @@ public class Login extends JDialog {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     passWF.setEchoChar((char) 0); // Make the password visible
                 } else {
-                    passWF.setEchoChar('●'); // Password is black, needs mask
+                    passWF.setEchoChar('●'); // Password is black, needs mask :D
                 }
             }
         });

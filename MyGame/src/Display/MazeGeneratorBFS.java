@@ -4,8 +4,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-public class MazeGenerator {
+public class MazeGeneratorBFS {
+    ///This is pretty much a copy of the method using DFS because i was curious about how the maze would look if i did this
+    /// It's nice that the FA course proved to be useful!
+
     // Directions for movement (up, down, left, right)
+    static Queue<int[]> queue = new LinkedList<>();
     private static final int[][] DIRECTIONS = {
             {-2, 0}, {2, 0}, {0, -2}, {0, 2}
     };
@@ -29,11 +33,12 @@ public class MazeGenerator {
         }
 
         // Starting point for the maze
-        int startX = 1, startY = 1;
+        int startX = 25, startY = 25;
         maze[startX][startY] = 1; // Path - grass tile
-
+        ///Mark visited
+        queue.offer(new int[]{startX, startY});
         //random DFS - FA ahh bullshi-
-        minePath(startX, startY, maze, size);
+        minePath( maze, size);
         return maze;
     }
 
@@ -41,9 +46,11 @@ public class MazeGenerator {
         return x != 10 && x != 11 && x != 12;
     }
 
-    private static void minePath(int x, int y, int[][] maze, int size) {
+    private static void minePath(int[][] maze, int size) {
         //randomize order of traversal
-
+        int[] a =queue.poll();
+        int x = a[0];
+        int y = a[1];
         List<int[]> directions = new ArrayList<>(Arrays.asList(DIRECTIONS));//Intellij vazand ca scriu cod in 3 linii si dandu mi totul intr una:...
         Collections.shuffle(directions);//The java blessing
         Collections.shuffle(directions);
@@ -52,13 +59,15 @@ public class MazeGenerator {
             int dx = x + dir[0];
             int dy = y + dir[1];
 
+            //maze[a[0]+dx][a[0]+dy] = 1;
             // Check if the new cell is within bounds and unvisited
             if (dx > 0 && dx < size - 1 && dy > 0 && dy < size - 1 && !isVisit(maze[dx][dy])) {
+                if(maze[dx][dy]!=1) queue.offer(new int[]{dx,dy});
                 // Carve a path between current cell and the new cell
                 maze[x + dir[0] / 2][y + dir[1] / 2] = 1; // Path
                 maze[dx][dy] = 1; // Path
-                minePath(dx, dy, maze, size);
             }
+            if (!queue.isEmpty()) minePath(maze, size);
         }
     }
 

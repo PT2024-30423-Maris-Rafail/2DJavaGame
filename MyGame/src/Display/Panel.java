@@ -56,7 +56,8 @@ public class Panel extends JPanel implements Runnable {
     //it, we'd run into memory issues along the road, since a lot of games (Elden Ring, my beloved, are very detailed)
     //In 3D it's a bit more complicated, but in 2D, we can simply not move the character, but the map itself
 
-    int speedMultiplier = 20;//i add this for the future. if we add a 2* speed feature
+    int speedMultiplier = 6;
+    //i add this for the future. if we add a 2* speed feature
 
     public MusicPlayer musicPlayer;// = new MusicPlayer();
 
@@ -72,7 +73,7 @@ public class Panel extends JPanel implements Runnable {
     public State state = State.TITLE_SCREEN;
     //public State previousState = State.MAP1;
     int FPS = 60;
-    public Player player = new Player(this, keyHandler, speedMultiplier);
+    public Player player ;
 
     public CheckCollision checkCollision = new CheckCollision(this);
 
@@ -110,17 +111,21 @@ public class Panel extends JPanel implements Runnable {
     public ScoreBoard scoreBoard;
     ScoreTable tableModel;
     JTable scoreTable;
-
+    public boolean isFirstRound = false;
     // Add table to a JScrollPane
     JScrollPane scrollPane;
     JPanel mainPanel;
     CardLayout cardLayout;
     JFrame window;
 
+    public boolean isAdmin = false;
     public Panel(MusicPlayer musicPlayer, JPanel mainPanel, CardLayout cardLayout, JFrame window) {
         this.window = window;
         this.mainPanel = mainPanel;
         this.cardLayout = cardLayout;
+
+
+        player = new Player(this, keyHandler, speedMultiplier);
 //        register = new Register();
 //        this.add(register);
 //        register.setVisible(true);
@@ -465,9 +470,17 @@ public class Panel extends JPanel implements Runnable {
         int scoreId = dBConnection.addRun(currentScore, userId);
 
         bestTimeScore = dBConnection.getBestTime(userId);
-        if (compareScores(bestTimeScore, currentScore) > 0) {
+        if(bestTimeScore == null)isFirstRound = true;
+        if(!isFirstRound) {
+
+        }
+        if(isFirstRound){
+            dBConnection.addBestRun(scoreId,userId);
+        }
+        else if (compareScores(bestTimeScore, currentScore) > 0) {
             dBConnection.updateBestRun(scoreId, userId);
         }
+
 
         scoreBoard = dBConnection.getScoreBoard();
         tableModel = new ScoreTable(scoreBoard);
@@ -554,15 +567,18 @@ public class Panel extends JPanel implements Runnable {
         int scoreX1 = (screenWidth - scoreWidth1) / 2; // Calculate X-coordinate for centering
         g2d.drawString(score1, scoreX1, 350);
         g2d.setColor(Color.WHITE);
-        String welcomeText2 = "Your PB:";
-        int welcomeWidth2 = fm.stringWidth(welcomeText2);
-        int welcomeX2 = (screenWidth - welcomeWidth2) / 2; // Calculate X-coordinate for centering
-        g2d.drawString(welcomeText2, welcomeX2, 400);
-        g2d.setColor(new Color(197, 44, 17));
-        String score2 = bestTimeScore.hour + "h " + bestTimeScore.minutes + "m " + bestTimeScore.seconds + "s " + bestTimeScore.milliseconds + "ms";
-        int scoreWidth2 = fm.stringWidth(score2);
-        int scoreX2 = (screenWidth - scoreWidth2) / 2; // Calculate X-coordinate for centering
-        g2d.drawString(score2, scoreX2, 450);
+        if(!isFirstRound) {
+            String welcomeText2 = "Your PB:";
+            int welcomeWidth2 = fm.stringWidth(welcomeText2);
+            int welcomeX2 = (screenWidth - welcomeWidth2) / 2; // Calculate X-coordinate for centering
+            g2d.drawString(welcomeText2, welcomeX2, 400);
+            g2d.setColor(new Color(197, 44, 17));
+            String score2 = bestTimeScore.hour + "h " + bestTimeScore.minutes + "m " + bestTimeScore.seconds + "s " + bestTimeScore.milliseconds + "ms";
+            int scoreWidth2 = fm.stringWidth(score2);
+            int scoreX2 = (screenWidth - scoreWidth2) / 2; // Calculate X-coordinate for centering
+            g2d.drawString(score2, scoreX2, 450);
+        }
+
 
         g2d.setColor(Color.WHITE);
         String instr = "To continue, press Enter";

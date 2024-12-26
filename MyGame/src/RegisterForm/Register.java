@@ -7,7 +7,7 @@ import javax.swing.*;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.sql.SQLException;
+
 
 public class Register extends JDialog {
     private JTextField textFUserN;
@@ -20,6 +20,7 @@ public class Register extends JDialog {
     private JTextField textFmail;
     public UserLoginStatus status;
     ConnectR connectR = new ConnectR();
+
     //I'm sorry interfaces, i wasn't familiar with your game
     //this is so cool!!!!
 
@@ -32,17 +33,6 @@ public class Register extends JDialog {
 
     public void setBackToLoginListener(backToLoginListener backToLoginListener) {
         this.backToLoginListener = backToLoginListener;
-    }
-
-    /// Registering button
-    public interface registerListener {
-        void register();
-    }
-
-    private registerListener registerListener;
-
-    public void setRegisterListener(registerListener registerListener) {
-        this.registerListener = registerListener;
     }
 
 
@@ -59,14 +49,11 @@ public class Register extends JDialog {
             String confPassword = confpassF.getText();
             String email = textFmail.getText();
             System.out.println(name + password + confPassword + email);
-            if (name.isEmpty() || password.isEmpty() || confPassword.isEmpty() || email.isEmpty()) {
-                if (name.isEmpty()) JOptionPane.showMessageDialog(parent, "Please enter your name");
-                if (password.isEmpty()) JOptionPane.showMessageDialog(parent, "Please enter your password");
-                if (confPassword.isEmpty())
-                    JOptionPane.showMessageDialog(parent, "Please enter your confirm password");
-                if (email.isEmpty()) JOptionPane.showMessageDialog(parent, "Please enter your email");
 
-                //JOptionPane.showMessageDialog(null, "Please fill all the fields");
+            if (name.isEmpty() || password.isEmpty() || confPassword.isEmpty() || email.isEmpty() ) {
+
+                JOptionPane.showMessageDialog(null, "Please fill all the fields");
+
             } else {
                 status = LogInRegister.registerUser(name, password, confPassword, email);
                 switch (status) {
@@ -84,26 +71,26 @@ public class Register extends JDialog {
                         passWF.setText("");
                         confpassF.setText("");
                     }
+                    case INVALID_EMAIL -> {
+                        JOptionPane.showMessageDialog(RegisterPanel, "Invalid email");
+                        textFmail.setText("");
+                    }
                     case PASSWORD_MISMATCH -> {
                         JOptionPane.showMessageDialog(RegisterPanel, "Password Mismatch");
                         passWF.setText("");
                         confpassF.setText("");
                     }
                     case VALID -> {
-                        try {
-                            connectR.registerUser(name, password, email);
-                            JOptionPane.showMessageDialog(RegisterPanel, "Registration Successful! Please return to log in screen");
-                        } catch (SQLException err) {
-                            if ("23514".equals(err.getSQLState())) {
-                                JOptionPane.showMessageDialog(RegisterPanel, "Invalid Email Address");
-                            } else {
-                                err.printStackTrace();
-                            }
-                        }
+
+                        connectR.registerUser(name, password, email);
+                        JOptionPane.showMessageDialog(RegisterPanel, "Registration Successful! Please return to log in screen");
+
                         textFUserN.setText("");
-                        textFmail.setText("");
                         passWF.setText("");
                         confpassF.setText("");
+
+                        textFmail.setText("");
+
                     }
 
                 }

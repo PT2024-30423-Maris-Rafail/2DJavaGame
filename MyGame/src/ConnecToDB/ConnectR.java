@@ -8,6 +8,9 @@ import geoGame.ScoreBoard;
 import java.sql.*;
 import java.util.Random;
 
+/**
+ *Allows working with the database. It also doesn't sleep in summer
+ */
 public class ConnectR {
     Connection connection;
 
@@ -20,11 +23,16 @@ public class ConnectR {
 
     }
 
-    public boolean getCollision(String imageName) {
+    /**
+     * checks if a tile is supposed to collide with player
+     * @param tileName name of tile to check
+     * @return boolean value representing if collision happens
+     */
+    public boolean getCollision(String tileName) {
         try {
             Statement stmt = connection.createStatement();
 
-            String query = "SELECT collision FROM \"Collisions\" WHERE name ='" + imageName + "';";
+            String query = "SELECT collision FROM \"Collisions\" WHERE name ='" + tileName + "';";
 
             ResultSet rs = stmt.executeQuery(query);
             //System.out.println("negro");
@@ -58,6 +66,11 @@ public class ConnectR {
         return false;
     }
 
+    /**
+     * Counts entries in a table
+     * @param tableName table to check
+     * @return number of entries
+     */
     public int getSizeOfTable(String tableName) {
         try {
             Statement stmt = connection.createStatement();
@@ -76,6 +89,10 @@ public class ConnectR {
         return 0;
     }
 
+    /**
+     * Gets a message from the MESSAGES database. Is set to be funny
+     * @return String representing a funny message for the GUI
+     */
     public String getMessage() {
         int size = getSizeOfTable("messages");
         Random random = new Random();
@@ -100,6 +117,10 @@ public class ConnectR {
 
     public int currentTip = 1;
 
+    /**
+     * Helps users with a small tip
+     * @return String representing the tip
+     */
     public String getTip() {
 
         try {
@@ -120,6 +141,10 @@ public class ConnectR {
 
     }
 
+    /**
+     *
+     * @return time to display the certain tip for
+     */
     public int getTipTime() {
 
         try {
@@ -140,6 +165,11 @@ public class ConnectR {
 
     }
 
+    /**
+     *
+     * @param id id of certain coordinate set in the database
+     * @return object of class Location with necessary coordinates as string and country name
+     */
     public Location getCoordinates(int id) {
         Location location;
         try {
@@ -167,6 +197,7 @@ public class ConnectR {
         return null;
     }
 
+    //Allow for unique location selection per each game round + reset
     public void markVisited(int id) {
         try {
             Statement st = connection.createStatement();
@@ -307,13 +338,18 @@ public class ConnectR {
         return 0;
     }
 
-    public void registerUser(String username, String password, String email) throws SQLException {
+    public void registerUser(String username, String password, String email)  {
+        try{
+            Statement stmt = connection.createStatement();
 
-        Statement stmt = connection.createStatement();
+            String query = "INSERT INTO users (username, password, email) VALUES ('" + username + "','" + password + "','" + email + "');";
 
-        String query = "INSERT INTO users (username, password, email) VALUES ('" + username + "','" + password + "','" + email + "');";
+            stmt.executeUpdate(query);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-        stmt.executeUpdate(query);
     }
 
     public ScoreBoard getScoreBoard() {
@@ -384,6 +420,16 @@ public class ConnectR {
             statement.executeUpdate(query);
         } catch (SQLException e) {
             System.out.println("Error at trying to insert user TIME");
+            e.printStackTrace();
+        }
+    }
+    public void addBestRun(int scoreId, int userId) {
+        try {
+            Statement statement = connection.createStatement();
+            String query = "INSERT INTO \"bestScores\"(user_id,score_id) VALUES (" + userId + "," + scoreId + ");";
+            statement.executeUpdate(query);
+        } catch (SQLException e) {
+            System.out.println("Error at trying to insert user TIME into BEST RUN");
             e.printStackTrace();
         }
     }

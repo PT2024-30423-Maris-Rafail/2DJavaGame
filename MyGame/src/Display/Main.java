@@ -2,6 +2,8 @@ package Display;
 
 import GameState.MusicName;
 import Music.MusicPlayer;
+import Preparations.GameWindow;
+import RegisterForm.LogInRegister;
 import RegisterForm.Login;
 import RegisterForm.Register;
 
@@ -12,21 +14,29 @@ import java.awt.*;
 /// after updating the tiles: in map update which cause collisions
 public class Main {
     //Connection connection = null;
-    public static void game1() {
-        // Create and configure the JFrame
+    public static JFrame setMainWindow() {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
         window.setTitle("Lost");
         window.setIconImage(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/GeneralUtility/geo.png")));
+        return window;
+    }
+
+    public static void game1() {
+        // Create and configure the JFrame
+        GameWindow window = new GameWindow();
+        Login login = new Login(window);
+        Register register = new Register(window);
         //CardLayout to switch between panels (awesome)
         JPanel mainPanel = new JPanel(new CardLayout());
+
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         // Login Panel
-        Login login = new Login(window);
+
         mainPanel.add(login.LoginPanel, "Login");
         // Reg Panel
-        Register register = new Register(window);
+
         mainPanel.add(register.RegisterPanel, "Register");
 
         // Game Panel
@@ -49,7 +59,10 @@ public class Main {
 
             gamePanel.username = login.username;
             gamePanel.isEmail = login.isEmail;
-
+            if(LogInRegister.checksAdmin(gamePanel.username)) {
+                gamePanel.isAdmin = true;
+                gamePanel.player.speed = 20;
+            }
             // Resize
             SwingUtilities.invokeLater(() -> {
                 window.setPreferredSize(new Dimension(1152, 960));
@@ -57,7 +70,7 @@ public class Main {
                 window.pack();
                 window.setLocationRelativeTo(null);
             });
-
+            //gamePanel.isAdmin = true;
             gamePanel.requestFocusInWindow();
             gamePanel.startTheThread();
         });
@@ -86,8 +99,10 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        MazeGenerator.main();
+        //MazeGeneratorDFS.main();
+        MazeGeneratorBFS.main();
         game1();
+
     }
 
 }

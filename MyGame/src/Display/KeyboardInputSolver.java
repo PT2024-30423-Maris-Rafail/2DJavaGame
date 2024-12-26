@@ -3,24 +3,19 @@ package Display;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 
-//Was always thinking that implements seemed really useless, since, if we know what to implement
-//why would we use it... but here's the answer: WE MIGHT NOT KNOW WHAT TO IMPLEMENT
+//This is when I realised why interfaces were somewhat useful
 public class KeyboardInputSolver implements KeyListener {
     /*From SO:
     keyPressed - when the key goes down
     keyReleased - when the key comes up
-    keyTyped - when the Unicode character represented by this key is sent by the keyboard to system input.
+    keyTyped - when the Unicode character represented by this key is sent by the keyboard to system input. (?) :D
      */
     public boolean goUp, goDown, goLeft, goRight;
     //FOR UI
-    public boolean Enter;//-new tip
+    public boolean Enter;
     public boolean PAUSED;
     public boolean RESET;
-    private Direction direction = Direction.STOP;
-
-    public Direction getDirection() {
-        return direction;
-    }
+    //private Direction direction = Direction.STOP; // i wanted this to be used instead of the boolean values, but i let the idea go down the road
 
     @Override
     public void keyTyped(KeyEvent e) {//not used
@@ -28,7 +23,7 @@ public class KeyboardInputSolver implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        System.out.println("Key pressed: " + e.getKeyChar());
+        //System.out.println("Key pressed: " + e.getKeyChar());
         int code = e.getKeyCode();
         //System.out.println("Key Pressed: " + KeyEvent.getKeyText(code));
         if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
@@ -56,12 +51,7 @@ public class KeyboardInputSolver implements KeyListener {
         if (code == KeyEvent.VK_R) {
             RESET = true;
         }
-        switch (code) {
-            case KeyEvent.VK_W, KeyEvent.VK_UP -> direction = Direction.UP;
-            case KeyEvent.VK_S, KeyEvent.VK_DOWN -> direction = Direction.DOWN;
-            case KeyEvent.VK_A, KeyEvent.VK_LEFT -> direction = Direction.LEFT;
-            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> direction = Direction.RIGHT;
-        }
+
     }
 
     @Override
@@ -83,10 +73,11 @@ public class KeyboardInputSolver implements KeyListener {
         if (code == KeyEvent.VK_ENTER) {
             Enter = false;
         }
-        direction = Direction.STOP;
+        //direction = Direction.STOP;
     }
 
     public void setAllFalse() {
+        //for when guessing
         goUp = false;
         goDown = false;
         goLeft = false;

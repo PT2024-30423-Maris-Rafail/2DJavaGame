@@ -7,7 +7,7 @@ public class GuessLocation {
     private String country;
     final Panel panel;
     int[] locations;
-
+    int correctGuessesLimit = 1;
     public GuessLocation(Panel panel) {
         this.panel = panel;
         locations = new int[5];
@@ -24,6 +24,8 @@ public class GuessLocation {
 
     public void guess(int currentFragment) {
         panel.headingSlider.setVisible(true);
+//        if(panel.isAdmin)correctGuessesLimit = 1;
+//        else correctGuessesLimit = 5;
 //        System.out.println("Guessing " + country);
 //        Scanner scanner = new Scanner(System.in);
 //        String currentGuess = scanner.nextLine();
@@ -46,12 +48,13 @@ public class GuessLocation {
                 e.printStackTrace();
             }
         }
+        panel.guesses++;
         if (currentGuess != null && currentGuess.equals(country)) {
 
             System.out.println("You guessed the correct guess!");
             panel.correctGuesses++;
         }
-        if (panel.correctGuesses == 1) {
+        if (panel.correctGuesses == correctGuessesLimit) {
             if (panel.player.fragmentNumber == 3) panel.UI.timeInSec += (timeAfterGeo - timeBeforeGeo) / 1000000000.0;
             panel.playsGeo = false;
             panel.state = panel.previousState;

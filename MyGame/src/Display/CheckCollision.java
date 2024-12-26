@@ -11,11 +11,14 @@ public class CheckCollision {
         this.panel = panel;
     }
 
-    //public void CheckItem(ObjectManager objectManager);
+    /**
+     * A player can only enter onto, at most, 2 tiles, so, by analyzing the direction (key pressed) we check if that tile is in bounds and if it can be entered into
+     * @param entity entity moving into the tile
+     */
     public void checkTile(Entity entity) {
 
         int whichMap = 0;
-        if(panel.state == State.MAP2)whichMap = 1;
+        if (panel.state == State.MAP2) whichMap = 1;
 
         int leftX, rightX, topY, bottomY;//coordinates on the world map
         leftX = entity.mapX + entity.collisionX;
@@ -23,23 +26,25 @@ public class CheckCollision {
         topY = entity.mapY + entity.collisionY;
         bottomY = entity.mapY + entity.collisionY + entity.heightCollision;
         //System.out.println("here");
+        //checks if the tile is out of bounds, so that we don't access wrong memory from the tile array
         if (!((leftX - entity.speed >= 0) && (rightX + entity.speed <= panel.map.wrldHeight[whichMap]) && (topY - entity.speed >= 0) && (bottomY + entity.speed <= panel.map.wrldWidth[whichMap])
         )) {
-            System.out.println("here");
-            //entity.collides=true;
+            //System.out.println("HERE"+(leftX - entity.speed) + " " + (rightX + entity.speed ) + " " + ((topY - entity.speed )) + " " + ((bottomY + entity.speed )));
             return;
         }
+        //System.out.println((leftX - entity.speed) + " " + (rightX + entity.speed ) + " " + ((topY - entity.speed )) + " " + ((bottomY + entity.speed )));
 
         //we have coordinates. we have to check if the tile we want to move into is available for moving (doesn't cause collision)
-        // = > we need to know which tile(S) we are currently on
-        //we can't be on more than 2 tiles =>
+        // = > we need to know which tile(S) we can move to
+        //we can't move into more than 2 tiles =>
         int leftCol, rightCol, topRow, bottomRow;
+        //coordinates on map
         leftCol = leftX / panel.actualSize;
         rightCol = rightX / panel.actualSize;
         topRow = topY / panel.actualSize;
         bottomRow = bottomY / panel.actualSize;
         int movedIntoTile1, movedIntoTile2;
-        //System.out.println(panel.currentMap);
+        //depending on the moving direction, we go to check a specific tile
         switch (entity.direction) {
 
             case LEFT:
@@ -47,6 +52,7 @@ public class CheckCollision {
                 movedIntoTile1 = panel.map.tilesManager[whichMap][leftCol][topRow];
                 movedIntoTile2 = panel.map.tilesManager[whichMap][leftCol][bottomRow];
                 if (panel.map.tiles[whichMap][movedIntoTile1].isCollision || panel.map.tiles[whichMap][movedIntoTile2].isCollision) {
+                    //System.out.println("left collision");
                     entity.collides = true;
                 }
 
@@ -57,6 +63,7 @@ public class CheckCollision {
                 movedIntoTile2 = panel.map.tilesManager[whichMap][rightCol][bottomRow];
                 if (panel.map.tiles[whichMap][movedIntoTile1].isCollision || panel.map.tiles[whichMap][movedIntoTile2].isCollision) {
                     entity.collides = true;
+                    //System.out.println("right collision");
                 }
                 break;
             case UP:
@@ -65,6 +72,7 @@ public class CheckCollision {
                 movedIntoTile2 = panel.map.tilesManager[whichMap][rightCol][topRow];
                 if (panel.map.tiles[whichMap][movedIntoTile1].isCollision || panel.map.tiles[whichMap][movedIntoTile2].isCollision) {
                     entity.collides = true;
+                    //System.out.println("up collision");
                 }
                 break;
             case DOWN:
@@ -73,6 +81,7 @@ public class CheckCollision {
                 movedIntoTile2 = panel.map.tilesManager[whichMap][rightCol][bottomRow];
                 if (panel.map.tiles[whichMap][movedIntoTile1].isCollision || panel.map.tiles[whichMap][movedIntoTile2].isCollision) {
                     entity.collides = true;
+                    //System.out.println("down collision");
                 }
                 break;
 
@@ -80,6 +89,15 @@ public class CheckCollision {
 
     }
 
+    //same as above, but checks the items
+    //ADDITIONALLY: returns which of the items it read
+
+    /**
+     * Checks which Item the entity picks up
+     * @param entity entity whose movement is studied
+     * @param items Array of items which can be picked up
+     * @return index of item to be picked up
+     */
     public int checksColItemArray(Entity entity, Item[] items) {
         int entitySolidX, entitySolidY;
         int itemSolidX, itemSolidY;
@@ -102,7 +120,7 @@ public class CheckCollision {
                         entitySolidX = entitySolidX - panel.player.speed;
                         if (!(entitySolidY < itemSolidY || entitySolidY - panel.player.heightCollision > itemSolidY + itemHeight ||
                                 entitySolidX + panel.player.widthCollision < itemSolidX || entitySolidX > itemSolidX + itemWidth)) {
-                            //System.out.println("Left collision");
+
                             index = i;
                             if (items[i].collision) entity.collides = true;
                         }
@@ -115,7 +133,7 @@ public class CheckCollision {
                         entitySolidX += panel.player.speed;
                         if (!(entitySolidY < itemSolidY || entitySolidY - panel.player.heightCollision > itemSolidY + itemHeight ||
                                 entitySolidX + panel.player.widthCollision < itemSolidX || entitySolidX > itemSolidX + itemWidth)) {
-                            //System.out.println("Right collision");
+
                             index = i;
                             if (items[i].collision) entity.collides = true;
                         }
@@ -127,7 +145,7 @@ public class CheckCollision {
                         entitySolidY -= panel.player.speed;
                         if (!(entitySolidY < itemSolidY || entitySolidY - panel.player.heightCollision > itemSolidY + itemHeight ||
                                 entitySolidX + panel.player.widthCollision < itemSolidX || entitySolidX > itemSolidX + itemWidth)) {
-                            //System.out.println("UP collision");
+
                             index = i;
                             if (items[i].collision) entity.collides = true;
                         }
@@ -139,7 +157,7 @@ public class CheckCollision {
                         //entitySolidX+=panel.player.heightCollision
                         if (!(entitySolidY + panel.player.heightCollision < itemSolidY || entitySolidY - panel.player.heightCollision > itemSolidY + itemHeight ||
                                 entitySolidX + panel.player.widthCollision < itemSolidX || entitySolidX > itemSolidX + itemWidth)) {
-                            //System.out.println("Down collision");
+
                             index = i;
                             if (items[i].collision) entity.collides = true;
                         }
@@ -156,7 +174,14 @@ public class CheckCollision {
         return -1;
     }
 
+    /**
+     * Returns id of the item the entity walks into
+     * @param entity studied entity
+     * @return index of item in the objectManager array of the panel class
+     */
     public int whichItem(Entity entity) {
+        //the fact that the fragments are the only items in the second map simplified the logic
+        //if more items were present, we would have to check if we encountered a fragment or something else
         int index;
         //we check which is the index of the item we encounter
         index = checksColItemArray(entity, panel.objectManager.items);
