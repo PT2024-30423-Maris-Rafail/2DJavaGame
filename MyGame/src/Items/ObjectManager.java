@@ -1,6 +1,6 @@
 package Items;
 
-import Display.Panel;
+import Components.GamePanel;
 import GameState.State;
 
 import java.awt.*;
@@ -8,9 +8,9 @@ import java.awt.*;
 public class ObjectManager {
     public Item[] items;
     public Fragments fragments;
-    public Panel panel;
+    public GamePanel panel;
 
-    public ObjectManager(Panel panel) {
+    public ObjectManager(GamePanel panel) {
         items = new Item[10];
         this.panel = panel;
         fragments = new Fragments();
@@ -23,7 +23,8 @@ public class ObjectManager {
             if (items[1] != null && !panel.player.hasDarkCompass && !panel.player.hasCompass)
                 panel.objectManager.items[1].draw(g2d, panel);
             if (items[2] != null) panel.objectManager.items[2].draw(g2d, panel);
-        } else if (state == State.MAP2) {
+        }
+        if (state == State.MAP2 || (panel.currentMap == 1 && state == State.PAUSE)) {
             for (int i = 0; i < fragments.fragments.length; i++) {
                 if (fragments.fragments[i] != null) fragments.fragments[i].draw(g2d, panel);
             }

@@ -1,18 +1,20 @@
-package Display;
+package GameLogic;
 
+import Components.GamePanel;
 import Entity.Entity;
 import GameState.State;
 import Items.Item;
 
 public class CheckCollision {
-    Panel panel;
+    GamePanel panel;
 
-    public CheckCollision(Panel panel) {
+    public CheckCollision(GamePanel panel) {
         this.panel = panel;
     }
 
     /**
      * A player can only enter onto, at most, 2 tiles, so, by analyzing the direction (key pressed) we check if that tile is in bounds and if it can be entered into
+     *
      * @param entity entity moving into the tile
      */
     public void checkTile(Entity entity) {
@@ -39,26 +41,25 @@ public class CheckCollision {
         //we can't move into more than 2 tiles =>
         int leftCol, rightCol, topRow, bottomRow;
         //coordinates on map
-        leftCol = leftX / panel.actualSize;
-        rightCol = rightX / panel.actualSize;
-        topRow = topY / panel.actualSize;
-        bottomRow = bottomY / panel.actualSize;
+        leftCol = leftX / GamePanel.ACTUAL_SIZE;
+        rightCol = rightX / GamePanel.ACTUAL_SIZE;
+        topRow = topY / GamePanel.ACTUAL_SIZE;
+        bottomRow = bottomY / GamePanel.ACTUAL_SIZE;
         int movedIntoTile1, movedIntoTile2;
         //depending on the moving direction, we go to check a specific tile
         switch (entity.direction) {
 
             case LEFT:
-                leftCol = (leftX - entity.speed) / panel.actualSize;
+                leftCol = (leftX - entity.speed) / GamePanel.ACTUAL_SIZE;
                 movedIntoTile1 = panel.map.tilesManager[whichMap][leftCol][topRow];
                 movedIntoTile2 = panel.map.tilesManager[whichMap][leftCol][bottomRow];
                 if (panel.map.tiles[whichMap][movedIntoTile1].isCollision || panel.map.tiles[whichMap][movedIntoTile2].isCollision) {
                     //System.out.println("left collision");
                     entity.collides = true;
                 }
-
                 break;
             case RIGHT:
-                rightCol = (rightX + entity.speed) / panel.actualSize;
+                rightCol = (rightX + entity.speed) / GamePanel.ACTUAL_SIZE;
                 movedIntoTile1 = panel.map.tilesManager[whichMap][rightCol][topRow];
                 movedIntoTile2 = panel.map.tilesManager[whichMap][rightCol][bottomRow];
                 if (panel.map.tiles[whichMap][movedIntoTile1].isCollision || panel.map.tiles[whichMap][movedIntoTile2].isCollision) {
@@ -67,7 +68,7 @@ public class CheckCollision {
                 }
                 break;
             case UP:
-                topRow = (topY - entity.speed) / panel.actualSize;
+                topRow = (topY - entity.speed) / GamePanel.ACTUAL_SIZE;
                 movedIntoTile1 = panel.map.tilesManager[whichMap][leftCol][topRow];
                 movedIntoTile2 = panel.map.tilesManager[whichMap][rightCol][topRow];
                 if (panel.map.tiles[whichMap][movedIntoTile1].isCollision || panel.map.tiles[whichMap][movedIntoTile2].isCollision) {
@@ -76,7 +77,7 @@ public class CheckCollision {
                 }
                 break;
             case DOWN:
-                bottomRow = (bottomY + entity.speed) / panel.actualSize;
+                bottomRow = (bottomY + entity.speed) / GamePanel.ACTUAL_SIZE;
                 movedIntoTile1 = panel.map.tilesManager[whichMap][leftCol][bottomRow];
                 movedIntoTile2 = panel.map.tilesManager[whichMap][rightCol][bottomRow];
                 if (panel.map.tiles[whichMap][movedIntoTile1].isCollision || panel.map.tiles[whichMap][movedIntoTile2].isCollision) {
@@ -89,13 +90,11 @@ public class CheckCollision {
 
     }
 
-    //same as above, but checks the items
-    //ADDITIONALLY: returns which of the items it read
-
     /**
      * Checks which Item the entity picks up
+     *
      * @param entity entity whose movement is studied
-     * @param items Array of items which can be picked up
+     * @param items  Array of items which can be picked up
      * @return index of item to be picked up
      */
     public int checksColItemArray(Entity entity, Item[] items) {
@@ -165,9 +164,7 @@ public class CheckCollision {
 
                         //if(itemSolidY < entitySolidY)System.out.println("Down collision");
                         break;
-
                 }
-
             }
             if (index != -1) return index;
         }
@@ -176,6 +173,7 @@ public class CheckCollision {
 
     /**
      * Returns id of the item the entity walks into
+     *
      * @param entity studied entity
      * @return index of item in the objectManager array of the panel class
      */

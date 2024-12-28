@@ -20,21 +20,11 @@ public class CellColorer extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
                                                    boolean isSelected, boolean hasFocus, int row, int column) {
-        
-        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-        // Check if the row contains the specific string in any cell
-        //in the call, this will check if the user is in the top 10 and highlight their scores
-        boolean containsString = false;
-        for (int col = 0; col < table.getColumnCount(); col++) {
-            Object cellValue = table.getValueAt(row, col);
-            if (cellValue != null && cellValue.toString().contains(targetString)) {
-                containsString = true;
-                break;
-            }
-        }
-        //we color if the string is detected
-        if (containsString) {
+        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        //if we have the string as username, we color
+        Object cellValue = table.getValueAt(row, 1);
+        if (cellValue != null && cellValue.toString().equals(targetString)) {
             c.setBackground(highlightColor);
         } else {
             c.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
@@ -43,6 +33,8 @@ public class CellColorer extends DefaultTableCellRenderer {
         return c;
     }
 }
+
+
 
 
 

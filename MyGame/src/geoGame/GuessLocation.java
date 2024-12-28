@@ -1,14 +1,18 @@
 
 package geoGame;
 
-import Display.Panel;
+import Components.GamePanel;
 
 public class GuessLocation {
     private String country;
-    final Panel panel;
+    final GamePanel panel;
     int[] locations;
-    int correctGuessesLimit = 1;
-    public GuessLocation(Panel panel) {
+    int correctGuessesLimit = 2;
+    double timeBeforeGeo = 0;
+    double timeAfterGeo = 0;
+    String currentGuess = null;
+
+    public GuessLocation(GamePanel panel) {
         this.panel = panel;
         locations = new int[5];
     }
@@ -18,91 +22,98 @@ public class GuessLocation {
     }
 
     public void setLocations(int current) {
-        locations[panel.guesses] = current;
-        System.out.println("For guess #" + panel.guesses + ": " + current);
+        locations[panel.geoGameManager.guesses] = current;
+        System.out.println("For guess #" + panel.geoGameManager.guesses + ": " + current);
     }
 
-    public void guess(int currentFragment) {
-        panel.headingSlider.setVisible(true);
-//        if(panel.isAdmin)correctGuessesLimit = 1;
-//        else correctGuessesLimit = 5;
-//        System.out.println("Guessing " + country);
-//        Scanner scanner = new Scanner(System.in);
-//        String currentGuess = scanner.nextLine();
-        String currentGuess = null;
-        double timeBeforeGeo = 0;
-        double timeAfterGeo = 0;
+    private void getInput() {
         synchronized (panel.gameThread) {
             try {
-                //System.out.println("mata");
-                //System.out.println("Waiting for user input...");
                 timeBeforeGeo = System.nanoTime();
-                //System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa"+);
-                panel.gameThread.wait(); // Wait for input to be provided
-                //System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"+System.nanoTime());
+                panel.gameThread.wait(); // Wait for input
                 timeAfterGeo = System.nanoTime();
-
-                //panel.UI.timeInSec+=(NIGGERTimeAfterGeo-NIGGERTimeBeforeGeo)/1000000000.0;
-                currentGuess = panel.guessField.getText(); // Retrieve input
+                currentGuess = panel.geoGameManager.guessField.getText(); // get input
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        panel.guesses++;
-        if (currentGuess != null && currentGuess.equals(country)) {
+    }
 
-            System.out.println("You guessed the correct guess!");
-            panel.correctGuesses++;
-        }
-        if (panel.correctGuesses == correctGuessesLimit) {
-            if (panel.player.fragmentNumber == 3) panel.UI.timeInSec += (timeAfterGeo - timeBeforeGeo) / 1000000000.0;
-            panel.playsGeo = false;
-            panel.state = panel.previousState;
-            panel.setFocusable(true); // Allow the panel to gain focus
-            panel.requestFocusInWindow(); // Request focus for key events
-            panel.player.fragmentNumber++;
-            panel.firstContact = true;
-            for (int i = 0; i < panel.guesses; i++) panel.dBConnection.markUNVisited(locations[i]);
-            if (!panel.player.hasDarkCompass) {
-                panel.objectManager.fragments.fragments[currentFragment] = null;
-            } else {
-                panel.map.tilesManager[1][panel.objectManager.fragments.fragments[currentFragment].mapX / panel.actualSize][panel.objectManager.fragments.fragments[currentFragment].mapY / panel.actualSize] = 1;
-                panel.itemSetter.setFragment(currentFragment);
-            }
+    private void notifyPanel() {
+        panel.geoGameManager.playsGeo = false;
+        panel.state = panel.previousState;
+        panel.setFocusable(true);
+        panel.requestFocusInWindow();
+        panel.player.fragmentNumber++;
+        panel.geoGameManager.firstContact = true;
+    }
 
-            panel.textFieldPanel.setVisible(false);
-            panel.UI.time = System.currentTimeMillis();
-            panel.UI.correctGuess = true;
-            panel.headingSlider.setVisible(false);
-        } else if (panel.guesses == 5) {
-            panel.playsGeo = false;
-            panel.state = panel.previousState;
-            panel.setFocusable(true); // Allow the panel to gain focus
-            panel.requestFocusInWindow(); // Request focus for key events
-            //panel.player.fragmentNumber++;
-            panel.firstContact = true;
-            for (int i = 0; i < panel.guesses; i++) panel.dBConnection.markUNVisited(locations[i]);
-            panel.map.tilesManager[1][panel.objectManager.fragments.fragments[currentFragment].mapX / panel.actualSize][panel.objectManager.fragments.fragments[currentFragment].mapY / panel.actualSize] = 1;
+    private void correctGuess(int currentFragment) {
+        if (panel.player.fragmentNumber == 3) panel.timeInSec += (timeAfterGeo - timeBeforeGeo) / 1000000000.0;
+
+        notifyPanel();
+
+        for (int i = 0; i < panel.geoGameManager.guesses; i++) panel.dbConnection.markUNVisited(locations[i]);
+        if (!panel.player.hasDarkCompass) {
+            panel.objectManager.fragments.fragments[currentFragment] = null;
+        } else {
+            panel.map.tilesManager[1][panel.objectManager.fragments.fragments[currentFragment].mapX / GamePanel.ACTUAL_SIZE][panel.objectManager.fragments.fragments[currentFragment].mapY / GamePanel.ACTUAL_SIZE] = 1;
             panel.itemSetter.setFragment(currentFragment);
-            panel.textFieldPanel.setVisible(false);
-            panel.headingSlider.setVisible(false);
         }
-//        else{
-        panel.hasCountry = false;
-        panel.hasCountry1 = false;
-        panel.needsReload = true;
-//        }
 
-        panel.isReady = false;
+        panel.geoGameManager.textFieldPanel.setVisible(false);
+        panel.UI.time = System.currentTimeMillis();
+        panel.UI.correctGuess = true;
+        panel.headingSlider.setVisible(false);
+    }
+
+    private void guessLimitReached(int currentFragment) {
+        panel.geoGameManager.playsGeo = false;
+        panel.state = panel.previousState;
+        panel.setFocusable(true); // Allow the panel to gain focus
+        panel.requestFocusInWindow(); // Request focus for key events
+        //panel.player.fragmentNumber++;
+        panel.geoGameManager.firstContact = true;
+        for (int i = 0; i < panel.geoGameManager.guesses; i++) panel.dbConnection.markUNVisited(locations[i]);
+        panel.map.tilesManager[1][panel.objectManager.fragments.fragments[currentFragment].mapX / GamePanel.ACTUAL_SIZE][panel.objectManager.fragments.fragments[currentFragment].mapY / GamePanel.ACTUAL_SIZE] = 1;
+        panel.itemSetter.setFragment(currentFragment);
+        panel.geoGameManager.textFieldPanel.setVisible(false);
+        panel.headingSlider.setVisible(false);
+    }
+
+    private void guessCheck(int currentFragment) {
+        if (currentGuess != null && currentGuess.equals(country)) {
+            //System.out.println("You guessed the correct guess!");
+            panel.geoGameManager.correctGuesses++;
+        }
+        if (panel.geoGameManager.correctGuesses == correctGuessesLimit) {
+            correctGuess(currentFragment);
+            panel.geoGameManager.geoGame.emptyImages();
+        } else if (panel.geoGameManager.guesses == 5) {
+            guessLimitReached(currentFragment);
+            panel.geoGameManager.geoGame.emptyImages();
+        }
+    }
+
+    public void guess(int currentFragment) {
+        panel.headingSlider.setVisible(true);
+        panel.headingSlider.setFocusable(true);
+        currentGuess = null;
+        timeBeforeGeo = 0;
+        timeAfterGeo = 0;
+        getInput();
+
+        panel.geoGameManager.guesses++;
+        panel.geoGameManager.guessField.setText("");
+
+        guessCheck(currentFragment);
+        panel.geoGameManager.hasCountry = false;
+
+        panel.needsReload = true;
+
+        panel.geoGameManager.isReady = false;
         panel.headingSlider.setValue(0);
-        System.out.println("CG: " + panel.correctGuesses + " G:" + panel.guesses);
-//        if(panel.correctGuesses == 3){
-//            panel.playsGeo = false;
-//            panel.player.fragmentNumber++;
-//        }
-//        else if(panel.guesses == 5){
-//            panel.playsGeo = false;
-//            panel.moveCurrent = true;
-//        }
+        //System.out.println("CG: " + panel.geoGameManager.correctGuesses + " G:" + panel.geoGameManager.guesses);
+
     }
 }

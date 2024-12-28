@@ -3,7 +3,6 @@ package RegisterForm;
 public class User {
     private String username;
     private String password;
-    private String email;
 
     public void setUsername(String username) {
         this.username = username;
@@ -14,7 +13,7 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        username = email;
     }
 
     public String getUsername() {
@@ -25,7 +24,4 @@ public class User {
         return password;
     }
 
-    public String getEmail() {
-        return email;
-    }
 }

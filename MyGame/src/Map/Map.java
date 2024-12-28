@@ -1,6 +1,6 @@
 package Map;
 
-import Display.Panel;
+import Components.GamePanel;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -9,7 +9,7 @@ import java.io.*;
 import ConnecToDB.*;
 
 public class Map {
-    Panel panel;
+    GamePanel panel;
     public Tile[][] tiles;
 
     File folder;
@@ -19,28 +19,22 @@ public class Map {
     public int[] wrldCol, wrldRow;
     public int[] wrldWidth, wrldHeight;
 
-    public Map(Panel panel) {
+    public Map(GamePanel panel) {
 
         this.panel = panel;
 
-        //System.out.println(panel.nrOfMaps);
         wrldCol = new int[panel.nrOfMaps];
         wrldRow = new int[panel.nrOfMaps];
-        wrldCol[0] = panel.wordlCol[0];
-        wrldRow[0] = panel.wordlRow[0];
-        wrldCol[1] = panel.wordlCol[1];
-        wrldRow[1] = panel.wordlRow[1];
         wrldWidth = new int[panel.nrOfMaps];
         wrldHeight = new int[panel.nrOfMaps];
-        wrldWidth[0] = wrldCol[0] * panel.actualSize;
-        wrldHeight[0] = wrldRow[0] * panel.actualSize;
-        wrldWidth[1] = wrldCol[1] * panel.actualSize;
-        wrldHeight[1] = wrldRow[1] * panel.actualSize;
-        //int a=
-        //wrldHeight = panel.actualSize * wrldRow;
-        //wrldWidth = panel.actualSize * wrldCol;
-        //System.out.println(folderPath);
-        //images = new File[panel.nrOfMaps][100];
+
+        for (int i = 0; i < panel.nrOfMaps; i++) {
+            wrldCol[i] = panel.wordlCol[i];
+            wrldRow[i] = panel.wordlRow[i];
+            wrldWidth[i] = wrldCol[i] * GamePanel.ACTUAL_SIZE;
+            wrldHeight[i] = wrldRow[i] * GamePanel.ACTUAL_SIZE;
+        }
+
         images = new File[panel.nrOfMaps][];
         folder = new File("images/Tiles/voiD");
         images[0] = folder.listFiles((_, name) -> name.endsWith(".png"));
@@ -51,33 +45,26 @@ public class Map {
         tilesManager = new int[panel.nrOfMaps][][];
         createMap("Maps/map1.txt", 0);
         createMap("Maps/map2.txt", 1);
-
-//        for(int i=0;i<panel.nrOfMaps;i++) {
-//            createMap(map,panel.currentMap);
-//        }
-
-
     }
 
-    //tilesManager = new int[panel.nrOfMaps][wrldCol[whichMap]+1][wrldRow[whichMap]+1];
-    public void createMap(String path, int whichMap) {
+    public static boolean okToDraw(GamePanel panel, int mapX, int mapY) {
+        return (mapX >= panel.player.mapX - panel.player.playerX - GamePanel.ACTUAL_SIZE && mapX <= panel.player.mapX + panel.player.playerX + GamePanel.ACTUAL_SIZE &&
+                mapY >= panel.player.mapY - panel.player.playerY - GamePanel.ACTUAL_SIZE && mapY <= panel.player.mapY + panel.player.playerY + GamePanel.ACTUAL_SIZE);
+    }
+
+    private void createTiles(int whichMap) {
         tilesManager[whichMap] = new int[wrldCol[whichMap]][wrldRow[whichMap]];
-        //allTiles = new BufferedImage[images.length];
-        //System.out.println(images.length);
         tiles[whichMap] = new Tile[images[whichMap].length];
         for (int i = 0; i < images[whichMap].length; i++) {
             tiles[whichMap][i] = new Tile();
         }
-        //which tiles can't be passed through?
-        tiles[whichMap][0].isCollision = true;
-        for (int i = 2; i <= 6; i++) tiles[whichMap][i].isCollision = true;
+    }
 
-        preloadImages(whichMap);
+    private void getMapFromFile(String path, int whichMap) {
         try {
             InputStream read = getClass().getClassLoader().getResourceAsStream(path);
             assert read != null;
             BufferedReader fscanf = new BufferedReader(new InputStreamReader(read));
-
             int col = 0;
             int row = 0;
             while (col < wrldCol[whichMap] || row < wrldRow[whichMap]) {
@@ -88,7 +75,6 @@ public class Map {
                     String[] tiles = line.split(" ");
                     int x = Integer.parseInt(tiles[col]);
                     tilesManager[whichMap][col][row] = x;
-
                     col++;
                 }
                 row++;
@@ -96,34 +82,38 @@ public class Map {
             fscanf.close();
         } catch (Exception e) {
             e.printStackTrace();
-
         }
+    }
+
+    private void setTileCollision(int whichMap) {
+        tiles[whichMap][0].isCollision = true;
+        for (int i = 2; i <= 6; i++) tiles[whichMap][i].isCollision = true;
+    }
+
+    private void createMap(String path, int whichMap) {
+        createTiles(whichMap);
+
+        setTileCollision(whichMap);
+        preloadImages(whichMap);
+        getMapFromFile(path, whichMap);
     }
 
     private void preloadImages(int whichMap) {
         ConnectR connection = new ConnectR();
         try {
             for (int i = 0; i < images[whichMap].length; i++) {
-                //System.out.println(i+"\n");
-
                 tiles[whichMap][i].image = ImageIO.read(images[whichMap][i]);
                 tiles[whichMap][i].imageName = images[whichMap][i].getName();
                 tiles[whichMap][i].isCollision = connection.getCollision(images[whichMap][i].getName());
-                //System.out.println(connection.getCollision(images[i].getName()));
-                //System.out.println(tiles[i].imageName);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
     int which = 0;
 
-    public void drawTiles(Graphics2D g2d) {
-        int col = 0;
-        int row = 0;
-
+    private void swapMap() {
         if (!panel.player.keyHandler.PAUSED) {
             switch (panel.state) {
                 case MAP1, MAP1_PORTAL_OPENED -> which = 0;
@@ -131,29 +121,24 @@ public class Map {
 
             }
         }
-        //System.out.println(which);
-        //which=1;
-        //System.out.println(which);
-        //System.out.println(wrldCol[which]+" "+wrldRow[which]);
-        //System.out.println(wrldCol[which]+" "+wrldRow[which]);
+    }
+
+    public void drawTiles(Graphics2D g2d) {
+        swapMap();
+        int col = 0;
+        int row = 0;
         while (col < wrldCol[which] && row < wrldRow[which]) {
-            int mapX = col * panel.actualSize;
-            int mapY = row * panel.actualSize;
+            int mapX = col * GamePanel.ACTUAL_SIZE;
+            int mapY = row * GamePanel.ACTUAL_SIZE;
 
             int screenX = mapX - panel.player.mapX + panel.player.playerX;
             int screenY = mapY - panel.player.mapY + panel.player.playerY;
             //System.out.println(col+" "+row);
             int tileNum = tilesManager[which][col][row];
-            //System.out.println(tileNum);
-            //System.out.println(mapX + " " + panel.player.mapX + " " + panel.player.playerX);
-            if (mapX >= panel.player.mapX - panel.player.playerX - panel.actualSize && mapX <= panel.player.mapX + panel.player.playerX + panel.actualSize &&
-                    mapY >= panel.player.mapY - panel.player.playerY - panel.actualSize && mapY <= panel.player.mapY + panel.player.playerY + panel.actualSize) {
-                g2d.drawImage(tiles[which][tileNum].image, screenX, screenY, panel.actualSize, panel.actualSize, null);
+            if (okToDraw(panel, mapX, mapY)) {
+                g2d.drawImage(tiles[which][tileNum].image, screenX, screenY, GamePanel.ACTUAL_SIZE, GamePanel.ACTUAL_SIZE, null);
             }
-
-
             col++;
-
             if (col == wrldCol[which]) {//FUDGE OFF
                 col = 0;
                 row++;

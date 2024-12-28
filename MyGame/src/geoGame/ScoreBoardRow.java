@@ -5,12 +5,6 @@ public class ScoreBoardRow {
     private String time;
     private int place;
 
-    public ScoreBoardRow(String username, String time, int place) {
-        this.username = username;
-        this.time = time;
-        this.place = place;
-    }
-
     public ScoreBoardRow() {
         this.username = "";
         this.time = "";

@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.Random;
 
 /**
- *Allows working with the database. It also doesn't sleep in summer
+ * Allows working with the database. It also doesn't sleep in summer
  */
 public class ConnectR {
     Connection connection;
@@ -25,6 +25,7 @@ public class ConnectR {
 
     /**
      * checks if a tile is supposed to collide with player
+     *
      * @param tileName name of tile to check
      * @return boolean value representing if collision happens
      */
@@ -68,6 +69,7 @@ public class ConnectR {
 
     /**
      * Counts entries in a table
+     *
      * @param tableName table to check
      * @return number of entries
      */
@@ -91,6 +93,7 @@ public class ConnectR {
 
     /**
      * Gets a message from the MESSAGES database. Is set to be funny
+     *
      * @return String representing a funny message for the GUI
      */
     public String getMessage() {
@@ -101,7 +104,7 @@ public class ConnectR {
             Statement stmt = connection.createStatement();
 
             String query = "SELECT messages.message from messages where id = " + (random.nextInt(size) + 1) + ";";
-            //System.out.println(random.nextInt(size));
+            //System.out.println(random.nextInt(tableSize));
             ResultSet rs = stmt.executeQuery(query);
             //System.out.println("negro");
             if (rs.next()) {
@@ -119,6 +122,7 @@ public class ConnectR {
 
     /**
      * Helps users with a small tip
+     *
      * @return String representing the tip
      */
     public String getTip() {
@@ -127,7 +131,7 @@ public class ConnectR {
             Statement stmt = connection.createStatement();
 
             String query = "SELECT tips.tips from tips where id = " + currentTip + ";";
-            //System.out.println(random.nextInt(size));
+            //System.out.println(random.nextInt(tableSize));
             ResultSet rs = stmt.executeQuery(query);
             //System.out.println("negro");
             if (rs.next()) {
@@ -142,7 +146,6 @@ public class ConnectR {
     }
 
     /**
-     *
      * @return time to display the certain tip for
      */
     public int getTipTime() {
@@ -151,7 +154,7 @@ public class ConnectR {
             Statement stmt = connection.createStatement();
 
             String query = "SELECT tips.active_seconds from tips where id = " + currentTip + ";";
-            //System.out.println(random.nextInt(size));
+            //System.out.println(random.nextInt(tableSize));
             ResultSet rs = stmt.executeQuery(query);
             //System.out.println("negro");
             if (rs.next()) {
@@ -166,7 +169,6 @@ public class ConnectR {
     }
 
     /**
-     *
      * @param id id of certain coordinate set in the database
      * @return object of class Location with necessary coordinates as string and country name
      */
@@ -176,7 +178,7 @@ public class ConnectR {
             Statement stmt = connection.createStatement();
 
             String query = "SELECT locations.coordinates,country.country_name from locations JOIN public.country ON locations.country_id = country.id WHERE locations.id = " + id + ";";
-            //System.out.println(random.nextInt(size));
+            //System.out.println(random.nextInt(tableSize));
             ResultSet rs = stmt.executeQuery(query);
             //System.out.println("negro");
             if (rs.next()) {
@@ -338,15 +340,14 @@ public class ConnectR {
         return 0;
     }
 
-    public void registerUser(String username, String password, String email)  {
-        try{
+    public void registerUser(String username, String password, String email) {
+        try {
             Statement stmt = connection.createStatement();
 
             String query = "INSERT INTO users (username, password, email) VALUES ('" + username + "','" + password + "','" + email + "');";
 
             stmt.executeUpdate(query);
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -356,7 +357,7 @@ public class ConnectR {
         ScoreBoard scoreBoard = new ScoreBoard();
         try {
             Statement stmt = connection.createStatement();
-            String query = "SELECT username, CONCAT(hours,'h ',minutes,'m ',seconds,'s ',milliseconds,'ms') AS \"time\" FROM scores JOIN users ON scores.user_id = users.id ORDER BY hours,minutes,seconds,milliseconds limit 10;";
+            String query = "SELECT username, CONCAT(hours,'h ',minutes,'m ',seconds,'s ',milliseconds,'ms') AS \"time\" FROM scores JOIN users ON scores.user_id = users.id WHERE username not like 'admin' ORDER BY hours,minutes,seconds,milliseconds limit 10;";
             ResultSet rs = stmt.executeQuery(query);
             int i = 0;
             while (rs.next() && i < 10) {
@@ -423,6 +424,7 @@ public class ConnectR {
             e.printStackTrace();
         }
     }
+
     public void addBestRun(int scoreId, int userId) {
         try {
             Statement statement = connection.createStatement();

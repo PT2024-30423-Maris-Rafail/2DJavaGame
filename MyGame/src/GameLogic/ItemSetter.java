@@ -1,17 +1,18 @@
-package Display;
+package GameLogic;
 
 import ConnecToDB.ConnectR;
+import Components.GamePanel;
 import Items.*;
 
 import java.util.Random;
 
 
 public class ItemSetter {
-    Panel panel;
+    GamePanel panel;
     ConnectR connection = new ConnectR();
     Random rand = new Random();
 
-    public ItemSetter(Panel panel) {
+    public ItemSetter(GamePanel panel) {
         this.panel = panel;
     }
 
@@ -31,13 +32,13 @@ public class ItemSetter {
         panel.objectManager.items[2].collision = connection.getCollisionForObjects(panel.objectManager.items[2].name);
         //System.out.println(panel.objectManager.items[2].collision);
 
-        panel.objectManager.items[0].mapX = 15 * panel.actualSize;
-        panel.objectManager.items[0].mapY = 21 * panel.actualSize;
+        panel.objectManager.items[0].mapX = 15 * GamePanel.ACTUAL_SIZE;
+        panel.objectManager.items[0].mapY = 21 * GamePanel.ACTUAL_SIZE;
 
-        panel.objectManager.items[1].mapX = 25 * panel.actualSize;
-        panel.objectManager.items[1].mapY = 25 * panel.actualSize;
+        panel.objectManager.items[1].mapX = 25 * GamePanel.ACTUAL_SIZE;
+        panel.objectManager.items[1].mapY = 25 * GamePanel.ACTUAL_SIZE;
 
-        panel.objectManager.items[2].mapX = 24 * panel.actualSize;
+        panel.objectManager.items[2].mapX = 24 * GamePanel.ACTUAL_SIZE;
         panel.objectManager.items[2].mapY = 0;
 
         setFragments();
@@ -47,11 +48,12 @@ public class ItemSetter {
     /**
      * randomly chooses a location for the items
      * logic can be optimized, but, in practice, we are sure a correct placement is reached
+     *
      * @param i index of item to set
      */
     public void setFragment(int i) {
         panel.objectManager.fragments.fragments[i] = new FragObj(i);
-        panel.objectManager.fragments.fragments[i].collision = connection.getCollisionForObjects(panel.objectManager.fragments.fragments[0].name);
+        panel.objectManager.fragments.fragments[i].collision = connection.getCollisionForObjects(panel.objectManager.fragments.fragments[i].name);
         int x, y;
         if (i == 0) {//for testing purposes, this item was on 10, 10 always
             x = 23;
@@ -65,8 +67,8 @@ public class ItemSetter {
         }
 
         System.out.println("For " + i + " x:" + x + " y:" + y);
-        panel.objectManager.fragments.fragments[i].mapX = x * panel.actualSize;
-        panel.objectManager.fragments.fragments[i].mapY = y * panel.actualSize;
+        panel.objectManager.fragments.fragments[i].mapX = x * GamePanel.ACTUAL_SIZE;
+        panel.objectManager.fragments.fragments[i].mapY = y * GamePanel.ACTUAL_SIZE;
         panel.map.tilesManager[1][x][y] = 13;
     }
 

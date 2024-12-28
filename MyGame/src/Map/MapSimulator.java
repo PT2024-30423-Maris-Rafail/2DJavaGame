@@ -1,7 +1,8 @@
-package Display;
+package Map;
 
 import java.util.Random;
 
+//used to get the first map, after which i hard coded some tiles into it and didn't modify after
 public class MapSimulator {
     public static void simulateMap1() {
         Random random = new Random();

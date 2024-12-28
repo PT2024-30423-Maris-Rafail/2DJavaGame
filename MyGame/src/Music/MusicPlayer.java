@@ -1,6 +1,7 @@
 package Music;
 
 import GameState.MusicName;
+import GameState.State;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -14,7 +15,13 @@ public class MusicPlayer {
     File folder = new File("Tracks");
     public File[] tracks = folder.listFiles((_, name) -> name.endsWith(".wav"));
 
-    String[] trackNames = new String[tracks.length];
+    String[] trackNames;
+
+    {
+        assert tracks != null;
+        trackNames = new String[tracks.length];
+    }
+
     //State state;
     public Clip[] musicTracks;
 
@@ -94,5 +101,18 @@ public class MusicPlayer {
         return null;
     }
 
+    public void playMain(State state) {
+        if (state == State.MAP1) {
+            playSound(MusicName.Empty);
+            //System.out.println("AAAAAAAAAAAAAA"); i love debugging
+        } else {
+            if (state == State.MAP2) {
+                playSound(MusicName.Aria_Math);
+            }
+            if (state == State.GAME_END1) {
+                playSound(MusicName.JOYRIDE);
+            }
+        }
+    }
 
 }

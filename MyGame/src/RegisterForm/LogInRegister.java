@@ -40,10 +40,9 @@ public class LogInRegister {
             status = UserLoginStatus.TAKEN_NAME;
         } else {
             Matcher matcher = pattern.matcher(email);
-            if(!matcher.matches()) {
+            if (!matcher.matches()) {
                 status = UserLoginStatus.INVALID_EMAIL;
-            }
-            else{
+            } else {
                 user = connectR.getAccountBasedOnEmail(email);
                 if (user != null) {
                     status = UserLoginStatus.TAKEN_EMAIL;
@@ -57,6 +56,7 @@ public class LogInRegister {
         }
         return status;
     }
+
     public static boolean checksAdmin(String userName) {
         return userName.equals("admin");
     }
