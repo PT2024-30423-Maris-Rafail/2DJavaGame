@@ -2,6 +2,7 @@
 package geoGame;
 
 import Components.GamePanel;
+import GameState.MusicName;
 
 public class GuessLocation {
     private String country;
@@ -23,7 +24,7 @@ public class GuessLocation {
 
     public void setLocations(int current) {
         locations[panel.geoGameManager.guesses] = current;
-        System.out.println("For guess #" + panel.geoGameManager.guesses + ": " + current);
+        //System.out.println("For guess #" + panel.geoGameManager.guesses + ": " + current);
     }
 
     private void getInput() {
@@ -53,7 +54,7 @@ public class GuessLocation {
 
         notifyPanel();
 
-        for (int i = 0; i < panel.geoGameManager.guesses; i++) panel.dbConnection.markUNVisited(locations[i]);
+        for (int i = 0; i < panel.geoGameManager.guesses; i++) panel.dbConnection.geoConnect.markUNVisited(locations[i]);
         if (!panel.player.hasDarkCompass) {
             panel.objectManager.fragments.fragments[currentFragment] = null;
         } else {
@@ -74,7 +75,7 @@ public class GuessLocation {
         panel.requestFocusInWindow(); // Request focus for key events
         //panel.player.fragmentNumber++;
         panel.geoGameManager.firstContact = true;
-        for (int i = 0; i < panel.geoGameManager.guesses; i++) panel.dbConnection.markUNVisited(locations[i]);
+        for (int i = 0; i < panel.geoGameManager.guesses; i++) panel.dbConnection.geoConnect.markUNVisited(locations[i]);
         panel.map.tilesManager[1][panel.objectManager.fragments.fragments[currentFragment].mapX / GamePanel.ACTUAL_SIZE][panel.objectManager.fragments.fragments[currentFragment].mapY / GamePanel.ACTUAL_SIZE] = 1;
         panel.itemSetter.setFragment(currentFragment);
         panel.geoGameManager.textFieldPanel.setVisible(false);
@@ -84,8 +85,10 @@ public class GuessLocation {
     private void guessCheck(int currentFragment) {
         if (currentGuess != null && currentGuess.equals(country)) {
             //System.out.println("You guessed the correct guess!");
+            panel.musicPlayer.playSound(MusicName.CORRECT);
             panel.geoGameManager.correctGuesses++;
         }
+        else panel.musicPlayer.playSound(MusicName.WRONG);
         if (panel.geoGameManager.correctGuesses == correctGuessesLimit) {
             correctGuess(currentFragment);
             panel.geoGameManager.geoGame.emptyImages();

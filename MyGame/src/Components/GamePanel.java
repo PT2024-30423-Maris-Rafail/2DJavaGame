@@ -120,8 +120,8 @@ public class GamePanel extends JPanel implements Runnable {
     private void geoSetter() {
         geoGameManager = new GeoGameManager(this);
         dbConnection = new ConnectR();
-        tableSize = dbConnection.getSizeOfTable("locations");
-        dbConnection.resetTable(tableSize);
+        tableSize = dbConnection.uiConnect.getSizeOfTable("locations");
+        dbConnection.geoConnect.resetTable(tableSize);
     }
 
     public GamePanel(MainPanel mainPanel, GameWindow window) {
@@ -200,7 +200,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void update() {
-        //System.out.println(headingSlider.getValue());
+        //System.out.println(player.mapX+" "+player.mapY);
         if (state != State.TITLE_SCREEN) {
             if (!geoGameManager.playsGeo) {
                 //System.out.println(keyHandler.PAUSED+" "+keyHandler.goRight+" "+keyHandler.goLeft+" "+keyHandler.goUp+" "+keyHandler.goDown );
@@ -214,7 +214,7 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
             if (state != State.GAME_END2 && state != State.GAME_END1 && !player.hasDarkCompass && player.fragmentNumber == 4) {
-                mainPanel.getEndingPanel().prepareEndingPanel(); //TODO
+                mainPanel.getEndingPanel().prepareEndingPanel();
             }
             if (state != State.GAME_END1 && state != State.PLAYS_GEO && state != State.GAME_END2) updateTimer();
         } else {
@@ -239,7 +239,7 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D g2d = (Graphics2D) g;
 
         if (state == State.GAME_END1 || state == State.GAME_END2) {
-            if (state == State.GAME_END1) StringDrawer.paintEndGameInfo(g2d, this);//TODO
+            if (state == State.GAME_END1) StringDrawer.paintEndGameInfo(g2d, this);
 
         } else {
             if (state == State.TITLE_SCREEN) {
@@ -250,7 +250,7 @@ public class GamePanel extends JPanel implements Runnable {
                 } else {
                     geoGameManager.setPlaysGeo(this);
                     geoGameManager.geoGame.drawGeo(g2d);
-                    System.out.println("N GEG NWEJKG WG");
+                    //System.out.println("N GEG NWEJKG WG");
                 }
             }
         }

@@ -48,9 +48,9 @@ public class UserInterf {
 
     private void nextMessage() {
         if (advance == 1 && panel.state != State.PAUSE) {
-            active_seconds = panel.dbConnection.getTipTime() * 60;
-            Tip = panel.dbConnection.getTip();//randomly selected
-            panel.dbConnection.currentTip++;
+            active_seconds = panel.dbConnection.uiConnect.getTipTime() * 60;
+            Tip = panel.dbConnection.uiConnect.getTip();//randomly selected
+            panel.dbConnection.uiConnect.currentTip++;
         }
     }
 
@@ -70,10 +70,8 @@ public class UserInterf {
         if (timeM > 120 && panel.player.keyHandler.Enter && panel.state != State.PAUSE) {
             timeM = 0;
             if (enterPressed) {
-                msg = panel.dbConnection.getMessage();
+                msg = panel.dbConnection.uiConnect.getMessage();
             } else msg = "I heard pressing Enter is cool!";
-
-            System.out.println("did");
         }
     }
 
@@ -110,8 +108,9 @@ public class UserInterf {
             if (System.currentTimeMillis() - time > 5000) {
                 correctGuess = false;
             }
-            g2D.setFont(customFonts.fontPause);
-            g2D.drawString("CORRECT", GamePanel.SCREEN_WIDTH / 2 - 230, GamePanel.SCREEN_HEIGHT / 3);
+            //g2D.setFont(customFonts.fontPause);
+            StringDrawer.drawString(g2D,customFonts.fontPause,"Fragment obtained",GamePanel.SCREEN_WIDTH, GamePanel.SCREEN_HEIGHT);
+            //g2D.drawString("Fragment obtained", GamePanel.SCREEN_WIDTH / 2 - 230, GamePanel.SCREEN_HEIGHT / 3);
         }
     }
 

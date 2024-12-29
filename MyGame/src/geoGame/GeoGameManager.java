@@ -46,9 +46,9 @@ public class GeoGameManager {
                 correctGuesses = 0;
                 firstContact = false;
             }
-            int validIndex = gamePanel.dbConnection.getValidIndex(gamePanel.tableSize);
+            int validIndex = gamePanel.dbConnection.geoConnect.getValidIndex(gamePanel.tableSize);
             //System.out.println(niggus);
-            location = gamePanel.dbConnection.getCoordinates(validIndex);
+            location = gamePanel.dbConnection.geoConnect.getCoordinates(validIndex);
             guesser.setCountry(location.getCountry());
             guesser.setLocations(validIndex);
             hasCountry = true;

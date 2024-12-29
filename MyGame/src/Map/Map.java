@@ -104,7 +104,7 @@ public class Map {
             for (int i = 0; i < images[whichMap].length; i++) {
                 tiles[whichMap][i].image = ImageIO.read(images[whichMap][i]);
                 tiles[whichMap][i].imageName = images[whichMap][i].getName();
-                tiles[whichMap][i].isCollision = connection.getCollision(images[whichMap][i].getName());
+                tiles[whichMap][i].isCollision = connection.gameConnect.getCollision(images[whichMap][i].getName());
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -58,10 +58,9 @@ public class Register extends JDialog {
             case INVALID_EMAIL -> JOptionPane.showMessageDialog(RegisterPanel, "Invalid email");
             case PASSWORD_MISMATCH -> JOptionPane.showMessageDialog(RegisterPanel, "Password Mismatch");
             case VALID -> {
-                connectR.registerUser(name, password, email);
+                connectR.accountConnect.registerUser(name, password, email);
                 JOptionPane.showMessageDialog(RegisterPanel, "Registration Successful! Please return to log in screen");
             }
-
         }
     }
 
@@ -79,7 +78,6 @@ public class Register extends JDialog {
         } else {
             showMessage(name, password, confPassword, email);
         }
-
     }
 
     private void toggleVisibility(boolean visible) {

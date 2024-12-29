@@ -13,18 +13,19 @@ public class LogInRegister {
     public static UserLoginStatus checkLogin(String userName, String password) {
         ConnectR connectR = new ConnectR();
         UserLoginStatus status;
-        User user = connectR.getAccountBasedOnUsername(userName);
-        User user1 = connectR.getAccountBasedOnEmail(userName);
+        User user = connectR.accountConnect.getAccountBasedOnUsername(userName);
+        User user1 = connectR.accountConnect.getAccountBasedOnEmail(userName);
         if (user == null && user1 == null) {
             status = UserLoginStatus.INVALID_NAME;
         } else {
             if (user != null) {
-                if (!password.equals(user.getPassword())) {
+
+                if (!PasswordUtils.checkPassword(password, user.getPassword())) {
                     status = UserLoginStatus.INVALID_PASS;
                 } else status = UserLoginStatus.VALID_USERNAME;
 
             } else {//means user1 is not null
-                if (!password.equals(user1.getPassword())) {
+                if (!PasswordUtils.checkPassword(password, user1.getPassword())) {
                     status = UserLoginStatus.INVALID_PASS;
                 } else status = UserLoginStatus.VALID_EMAIL;
             }
@@ -35,7 +36,7 @@ public class LogInRegister {
     public static UserLoginStatus registerUser(String userName, String password, String confPassword, String email) {
         ConnectR connectR = new ConnectR();
         UserLoginStatus status = UserLoginStatus.VALID;
-        User user = connectR.getAccountBasedOnUsername(userName);
+        User user = connectR.accountConnect.getAccountBasedOnUsername(userName);
         if (user != null) {
             status = UserLoginStatus.TAKEN_NAME;
         } else {
@@ -43,7 +44,7 @@ public class LogInRegister {
             if (!matcher.matches()) {
                 status = UserLoginStatus.INVALID_EMAIL;
             } else {
-                user = connectR.getAccountBasedOnEmail(email);
+                user = connectR.accountConnect.getAccountBasedOnEmail(email);
                 if (user != null) {
                     status = UserLoginStatus.TAKEN_EMAIL;
                 } else {

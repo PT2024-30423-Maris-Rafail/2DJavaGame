@@ -56,6 +56,12 @@ public class MusicPlayer {
             case JOYRIDE -> {
                 return 8;
             }
+            case CORRECT -> {
+                return 9;
+            }
+            case WRONG -> {
+                return 10;
+            }
         }
         return -1;
     }

@@ -28,13 +28,13 @@ public class StreetViewImage extends JFrame {
         else {
             for (int i = 0; i < 9; i++) index = i;
         }
-        System.out.println(index);
+        //System.out.println(index);
         panel.setFocusable(true);
         g2d.drawImage(rotatingImage[index], 0, 0, GamePanel.ACTUAL_SIZE * 12, GamePanel.ACTUAL_SIZE * 10, null);
     }
 
     public void emptyImages() {
-        for (int i = 0; i < 1; i++) rotatingImage[i] = null;
+        for (int i = 0; i < 36; i++) rotatingImage[i] = null;
     }
 
     private void obtainImage(String location, int heading) {
@@ -46,7 +46,7 @@ public class StreetViewImage extends JFrame {
                     + "&pitch=0"
                     + "&key=" + apiKey;
             URL url = new URL(imageUrl);
-            System.out.println(url.toString());
+            //System.out.println(url.toString());
             Image image = ImageIO.read(url);
             Image scaledImage = image.getScaledInstance(640, 640, Image.SCALE_SMOOTH);
             synchronized (rotatingImage) {
@@ -60,7 +60,7 @@ public class StreetViewImage extends JFrame {
 
     public void updateImageAsync(String location) {
         ExecutorService executor = Executors.newFixedThreadPool(5);
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 36; i++) {
             //TODO i<36
             int heading = i * 10;
             executor.submit(() -> {

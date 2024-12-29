@@ -27,15 +27,11 @@ public class CheckCollision {
         rightX = entity.mapX + entity.collisionX + entity.widthCollision;
         topY = entity.mapY + entity.collisionY;
         bottomY = entity.mapY + entity.collisionY + entity.heightCollision;
-        //System.out.println("here");
         //checks if the tile is out of bounds, so that we don't access wrong memory from the tile array
         if (!((leftX - entity.speed >= 0) && (rightX + entity.speed <= panel.map.wrldHeight[whichMap]) && (topY - entity.speed >= 0) && (bottomY + entity.speed <= panel.map.wrldWidth[whichMap])
         )) {
-            //System.out.println("HERE"+(leftX - entity.speed) + " " + (rightX + entity.speed ) + " " + ((topY - entity.speed )) + " " + ((bottomY + entity.speed )));
             return;
         }
-        //System.out.println((leftX - entity.speed) + " " + (rightX + entity.speed ) + " " + ((topY - entity.speed )) + " " + ((bottomY + entity.speed )));
-
         //we have coordinates. we have to check if the tile we want to move into is available for moving (doesn't cause collision)
         // = > we need to know which tile(S) we can move to
         //we can't move into more than 2 tiles =>
@@ -85,9 +81,7 @@ public class CheckCollision {
                     //System.out.println("down collision");
                 }
                 break;
-
         }
-
     }
 
     /**

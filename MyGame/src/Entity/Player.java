@@ -19,10 +19,9 @@ public class Player extends Entity {
     public final int playerY;
     public boolean hasCompass = false;
     public boolean hasDarkCompass = false;
-    public int fragmentNumber = 1;
+    public int fragmentNumber = 0;
     //TODO MAKE FRAGMENT NUMBER 0
     public int objectOfCol;
-    private int actualX, actualY;
 
     public Player(GamePanel panel, KeyboardInputSolver keyHandler, int speedMultiplier) {
         this.panel = panel;
@@ -47,21 +46,19 @@ public class Player extends Entity {
     }
 
     public boolean isOutsideOfBounds(State state) {
+        double actualX = Math.floor(mapX * 1.0 / GamePanel.ACTUAL_SIZE);
         //System.out.println(mapY+" "+(panel.map.wrldHeight[panel.currentMap] - panel.actualSize/2));
         if (mapY >= panel.map.wrldHeight[panel.currentMap] - GamePanel.ACTUAL_SIZE) {
             if ((state == State.MAP1 || state == State.MAP1_PORTAL_OPENED)) {
-                //System.out.println("cASE1");
                 return true;
             } else collides = true;
         }
         if (mapY <= 0 && (state == State.MAP1 || panel.state == State.MAP1_PORTAL_OPENED) &&
                 (actualX != 24 && actualX != 23 && actualX != 22 && actualX != 25)) {
-            //System.out.println("cASE2");
             return true;
         }
         if (mapX >= panel.map.wrldWidth[panel.currentMap] - GamePanel.ACTUAL_SIZE) {
             if (state == State.MAP1 || state == State.MAP1_PORTAL_OPENED) {
-                //System.out.println("case3");
                 return true;
             } else collides = true;
         }
@@ -104,7 +101,7 @@ public class Player extends Entity {
     }
 
     private void passThroughBridge() {
-        if (actualY == 22 && actualX == 23) {
+        if (mapY >= 2148 && mapY <= 2208 && mapX <= 2274 && mapX >= 2178) {
             panel.playedSong = 1;
             panel.musicPlayer.playSound(MusicName.Spuder_Man_Fade);
         }
@@ -137,10 +134,7 @@ public class Player extends Entity {
         panel.geoGameManager.playsGeo = true;
         panel.previousState = panel.state;
         panel.state = State.PLAYS_GEO;
-        //fragmentNumber++;
         keyHandler.setAllFalse();
-
-        //TO IMPLEMENT HERE FOR THE FRAGMENTS !!!
     }
 
     private void movePlayer() {
@@ -164,10 +158,8 @@ public class Player extends Entity {
     }
 
     private void handlePlayerEvents(State state) {
-        actualX = mapX / GamePanel.ACTUAL_SIZE;
-        actualY = mapY / GamePanel.ACTUAL_SIZE;
         //System.out.println("MOOOOOOOOOR");
-        if (actualY == 0 && actualX == 24 && (hasDarkCompass || hasCompass) && state == State.MAP1_PORTAL_OPENED) {
+        if (mapY <= 48 && mapX <= 2334 && mapX >= 2274 && (hasDarkCompass || hasCompass) && state == State.MAP1_PORTAL_OPENED) {
             moveToMap2();
         }
         if (panel.playedSong == 0) {
@@ -196,16 +188,12 @@ public class Player extends Entity {
                     getCompass(objectOfCol);
                 }
             }
-            if (panel.isAdmin) {collides = false;
-            System.out.println("her");}
+            if (panel.isAdmin) {collides = false;}
             //System.out.println("ce pisici");
-
-            //TODO remove the collides = false
             if (hasDarkCompass || !collides) {
                 //System.out.println(mapY+" "+mapX+" "+(mapY/panel.actualSize)+" "+(mapX/panel.actualSize));
                 movePlayer();
             }
-            //System.out.println(hasDarkCompass+" "+collides);
             imageCounter++;
             if (imageCounter > 13) {
                 if (whichImage == 1) whichImage = 2;
@@ -234,12 +222,11 @@ public class Player extends Entity {
         try {
             return ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(location)));
         } catch (IOException e) {
-            System.out.println("Unable to acces " + location);
+            System.out.println("Unable to access and get " + location);
             e.printStackTrace();
         }
         return null;
     }
-
     private void getPlayerImage() {
         up1 = getImage("/player/up1.png");
         up2 = getImage("/player/up2.png");

@@ -23,13 +23,13 @@ public class ItemSetter {
 
         //items is the array of the compasses and the door that is shut. they are loaded and placed
         panel.objectManager.items[0] = new Compass();
-        panel.objectManager.items[0].collision = connection.getCollisionForObjects(panel.objectManager.items[0].name);
+        panel.objectManager.items[0].collision = connection.gameConnect.getCollisionForObjects(panel.objectManager.items[0].name);
         //System.out.println(panel.objectManager.items[0].collision);
         panel.objectManager.items[1] = new DarkCompass();
-        panel.objectManager.items[1].collision = connection.getCollisionForObjects(panel.objectManager.items[1].name);
+        panel.objectManager.items[1].collision = connection.gameConnect.getCollisionForObjects(panel.objectManager.items[1].name);
         //System.out.println(panel.objectManager.items[1].collision);
         panel.objectManager.items[2] = new Door();
-        panel.objectManager.items[2].collision = connection.getCollisionForObjects(panel.objectManager.items[2].name);
+        panel.objectManager.items[2].collision = connection.gameConnect.getCollisionForObjects(panel.objectManager.items[2].name);
         //System.out.println(panel.objectManager.items[2].collision);
 
         panel.objectManager.items[0].mapX = 15 * GamePanel.ACTUAL_SIZE;
@@ -53,7 +53,7 @@ public class ItemSetter {
      */
     public void setFragment(int i) {
         panel.objectManager.fragments.fragments[i] = new FragObj(i);
-        panel.objectManager.fragments.fragments[i].collision = connection.getCollisionForObjects(panel.objectManager.fragments.fragments[i].name);
+        panel.objectManager.fragments.fragments[i].collision = connection.gameConnect.getCollisionForObjects(panel.objectManager.fragments.fragments[i].name);
         int x, y;
         if (i == 0) {//for testing purposes, this item was on 10, 10 always
             x = 23;
@@ -65,8 +65,7 @@ public class ItemSetter {
 
             } while (panel.map.tilesManager[1][x][y] != 1);
         }
-
-        System.out.println("For " + i + " x:" + x + " y:" + y);
+        //System.out.println("For " + i + " x:" + x + " y:" + y);
         panel.objectManager.fragments.fragments[i].mapX = x * GamePanel.ACTUAL_SIZE;
         panel.objectManager.fragments.fragments[i].mapY = y * GamePanel.ACTUAL_SIZE;
         panel.map.tilesManager[1][x][y] = 13;

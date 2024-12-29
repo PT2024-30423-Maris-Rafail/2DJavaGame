@@ -6,6 +6,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ButtonSetup {
+    /**
+     * Adds a listener to the button that allows log in
+     * It uses the text provided by the user to check it in the database with the respective login credentials
+     * In case of admin login, we set the isAdmin parameter to notify the other classes about functions that must behave differently
+     */
     private static void setLoginListener(GameWindow gameWindow, MainPanel mainPanel) {
         GamePanel gamePanel = mainPanel.getGamePanel();
         gameWindow.getLogin().setLoginSuccessListener(() -> {
@@ -34,6 +39,9 @@ public class ButtonSetup {
         });
     }
 
+    /**
+     * Allows moving to the register panel
+     */
     private static void setRegisterListener(GameWindow gameWindow, MainPanel mainPanel) {
         gameWindow.getLogin().setRegisterSuccessListener(
                 () -> {
@@ -49,6 +57,9 @@ public class ButtonSetup {
         );
     }
 
+    /**
+     * When in the register panel, after registering, user is requested to go back to log in screen
+     */
     private static void setReturnToLoginListener(GameWindow gameWindow, MainPanel mainPanel) {
         gameWindow.getRegister().setBackToLoginListener(
                 () -> {

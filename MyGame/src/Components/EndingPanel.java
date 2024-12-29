@@ -9,6 +9,9 @@ import geoGame.ScoreBoard;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Panel that appears after game has ended
+ */
 public class EndingPanel {
     ScoreBoard scoreBoard;
     ScoreTable tableModel;
@@ -27,6 +30,9 @@ public class EndingPanel {
         dbConnection = gamePanel.dbConnection;
     }
 
+    /**
+     * Compares scores (hour, minute, second, millisecond based)
+     */
     private int compareScores(TimeScore score1, TimeScore score2) {
         if (score1.hour > score2.hour) {
             return 1;
@@ -49,10 +55,13 @@ public class EndingPanel {
         return Integer.compare(score1.milliseconds, score2.milliseconds);
     }
 
+    /**
+     * Accesses database to get the id
+     */
     private int getUserId() {
-        System.out.println(gamePanel.isEmail);
-        if (gamePanel.isEmail) return dbConnection.getUserIDEmail(gamePanel.username);
-        return dbConnection.getUserIDUsername(gamePanel.username);
+        //System.out.println(gamePanel.isEmail);
+        if (gamePanel.isEmail) return dbConnection.accountConnect.getUserIDEmail(gamePanel.username);
+        return dbConnection.accountConnect.getUserIDUsername(gamePanel.username);
     }
 
     public void prepareEndingPanel() {
@@ -62,7 +71,7 @@ public class EndingPanel {
         gamePanel.state = State.GAME_END1;
 
         if (gamePanel.currentScore == null) gamePanel.currentScore = new TimeScore(gamePanel.timeInSec);
-        int scoreId = dbConnection.addRun(gamePanel.currentScore, userId);
+        int scoreId = dbConnection.accountConnect.addRun(gamePanel.currentScore, userId);
 
         handleScores();
         updateDB(scoreId);
@@ -71,21 +80,31 @@ public class EndingPanel {
         gamePanel.mainPanel.add(scorePanel, "Score");
     }
 
+    /**
+     * If the user hasn't played before, we set isFirstRound parameter
+     */
     private void handleScores() {
-        gamePanel.bestTimeScore = dbConnection.getBestTime(userId);
+        gamePanel.bestTimeScore = dbConnection.accountConnect.getBestTime(userId);
         if (gamePanel.bestTimeScore == null) gamePanel.isFirstRound = true;
     }
 
+    /**
+     * We update the best run id from users table
+     * @param scoreId id of currently finished run
+     */
     private void updateDB(int scoreId) {
-        if (gamePanel.isFirstRound) {
-            dbConnection.addBestRun(scoreId, userId);
-        } else if (compareScores(gamePanel.bestTimeScore, gamePanel.currentScore) > 0) {
-            dbConnection.updateBestRun(scoreId, userId);
+        if (gamePanel.isFirstRound || compareScores(gamePanel.bestTimeScore, gamePanel.currentScore) > 0) {
+            dbConnection.accountConnect.updateBestRun(scoreId, userId);
+            dbConnection.accountConnect.cleanDB();
         }
     }
 
+    /**
+     * Shows the top 10 scores, and the current user's score is colored red
+     * Doesn't show the admin's score
+     */
     private void setUpUI() {
-        if (scoreBoard == null) scoreBoard = dbConnection.getScoreBoard();
+        if (scoreBoard == null) scoreBoard = dbConnection.accountConnect.getScoreBoard();
         if (tableModel == null) tableModel = new ScoreTable(scoreBoard);
         if (showingTable == null) showingTable = new JTable(tableModel);
 
@@ -98,7 +117,6 @@ public class EndingPanel {
         for (int col = 0; col < showingTable.getColumnCount(); col++) {
             showingTable.getColumnModel().getColumn(col).setCellRenderer(rowRenderer);
         }
-
         if (scorePanel == null) scorePanel = new ScorePanel(scrollPane);
     }
 }

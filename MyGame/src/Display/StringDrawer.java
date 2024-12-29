@@ -6,7 +6,7 @@ import GameState.TimeScore;
 import java.awt.*;
 
 public class StringDrawer {
-    private static void drawString(Graphics2D g2d, Font font, String string, int screen_width, int screen_height) {
+    public static void drawString(Graphics2D g2d, Font font, String string, int screen_width, int screen_height) {
         g2d.setFont(font);
         FontMetrics fm = g2d.getFontMetrics(font);//I am always in awe of what methods are available to us... praise the devs
         int welcomeWidth = fm.stringWidth(string);
@@ -25,8 +25,11 @@ public class StringDrawer {
         StringDrawer.drawString(g2d, customFonts.fontInstr, welcomeText1, SCREEN_WIDTH, 300);
 
         g2d.setColor(new Color(64, 191, 34));
-        String score1 = currentScore.hour + "h " + currentScore.minutes + "m " + currentScore.seconds + "s " + currentScore.milliseconds + "ms";
-        StringDrawer.drawString(g2d, customFonts.fontInstr, score1, SCREEN_WIDTH, 350);
+        String score1;
+        if (currentScore != null) {
+            score1 = currentScore.hour + "h " + currentScore.minutes + "m " + currentScore.seconds + "s " + currentScore.milliseconds + "ms";
+            StringDrawer.drawString(g2d, customFonts.fontInstr, score1, SCREEN_WIDTH, 350);
+        }
 
 
         if (!panel.isFirstRound && bestTimeScore != null) {
