@@ -109,7 +109,7 @@ public class UserInterf {
                 correctGuess = false;
             }
             //g2D.setFont(customFonts.fontPause);
-            StringDrawer.drawString(g2D,customFonts.fontPause,"Fragment obtained",GamePanel.SCREEN_WIDTH, GamePanel.SCREEN_HEIGHT);
+            StringDrawer.drawString(g2D,customFonts.fontPause,"Fragment obtained",GamePanel.SCREEN_WIDTH, 200);
             //g2D.drawString("Fragment obtained", GamePanel.SCREEN_WIDTH / 2 - 230, GamePanel.SCREEN_HEIGHT / 3);
         }
     }

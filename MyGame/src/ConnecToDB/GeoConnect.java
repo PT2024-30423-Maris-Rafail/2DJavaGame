@@ -29,13 +29,13 @@ public class GeoConnect {
                 String coordinates = rs.getString("coordinates");
                 //System.out.println(coordinates);
                 String countryName = rs.getString("country_name");
-                System.out.println(countryName);
+                //.println(countryName);
                 location = new Location();
                 location.setCoordinates(coordinates);
                 location.setCountry(countryName);
                 return location;
             }
-            System.out.println("cioara");
+            //System.out.println("cioara");
             return null;
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,7 +53,7 @@ public class GeoConnect {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("Marked id " + id + " visited");
+        //System.out.println("Marked id " + id + " visited");
     }
 
     public void markUNVisited(int id) {
@@ -86,11 +86,11 @@ public class GeoConnect {
         Random random = new Random();
         int niggus = random.nextInt(size) + 1;
 
-        System.out.println("NIGGUS ESTE " + niggus);
+        //System.out.println("NIGGUS ESTE " + niggus);
         //niggus = 5;
         int copy = niggus + 1;
         while (niggus > 0 && checkVisited(niggus)) {
-            System.out.println("FOR NIGGUS = " + niggus + " IS " + checkVisited(niggus));
+            //System.out.println("FOR NIGGUS = " + niggus + " IS " + checkVisited(niggus));
             niggus--;
         }
         if (niggus == 0) {
