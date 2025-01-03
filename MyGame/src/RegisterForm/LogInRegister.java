@@ -37,22 +37,28 @@ public class LogInRegister {
         ConnectR connectR = new ConnectR();
         UserLoginStatus status = UserLoginStatus.VALID;
         User user = connectR.accountConnect.getAccountBasedOnUsername(userName);
-        if (user != null) {
-            status = UserLoginStatus.TAKEN_NAME;
+        if (userName.length() >50 || user != null) {
+            status = UserLoginStatus.INVALID_NAME;
         } else {
-            Matcher matcher = pattern.matcher(email);
-            if (!matcher.matches()) {
-                status = UserLoginStatus.INVALID_EMAIL;
-            } else {
-                user = connectR.accountConnect.getAccountBasedOnEmail(email);
-                if (user != null) {
-                    status = UserLoginStatus.TAKEN_EMAIL;
+            if(password.isEmpty() || confPassword.isEmpty() || password.length()>50 || confPassword.length()>50) {
+                status = UserLoginStatus.INVALID_PASSWORD;
+            }
+            else{
+                Matcher matcher = pattern.matcher(email);
+                if (email.length()>100 || !matcher.matches()) {
+                    status = UserLoginStatus.INVALID_EMAIL;
                 } else {
-                    if (!password.equals(confPassword)) {
-                        status = UserLoginStatus.PASSWORD_MISMATCH;
+                    user = connectR.accountConnect.getAccountBasedOnEmail(email);
+                    if (user != null) {
+                        status = UserLoginStatus.TAKEN_EMAIL;
+                    } else {
+                        if (!password.equals(confPassword)) {
+                            status = UserLoginStatus.PASSWORD_MISMATCH;
+                        }
                     }
                 }
             }
+
 
         }
         return status;

@@ -35,7 +35,7 @@ public class Register extends JDialog {
 
     private void setEmpty(UserLoginStatus status) {
         switch (status) {
-            case TAKEN_NAME, TAKEN_EMAIL, VALID -> {
+            case INVALID_NAME, TAKEN_EMAIL, VALID -> {
                 textFUserN.setText("");
                 textFmail.setText("");
                 passWF.setText("");
@@ -53,7 +53,7 @@ public class Register extends JDialog {
         status = LogInRegister.registerUser(name, password, confPassword, email);
         setEmpty(status);
         switch (status) {
-            case TAKEN_NAME -> JOptionPane.showMessageDialog(RegisterPanel, "Taken Username");
+            case INVALID_NAME -> JOptionPane.showMessageDialog(RegisterPanel, "Invalid Username");
             case TAKEN_EMAIL -> JOptionPane.showMessageDialog(RegisterPanel, "Taken email");
             case INVALID_EMAIL -> JOptionPane.showMessageDialog(RegisterPanel, "Invalid email");
             case PASSWORD_MISMATCH -> JOptionPane.showMessageDialog(RegisterPanel, "Password Mismatch");

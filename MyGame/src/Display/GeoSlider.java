@@ -1,7 +1,5 @@
 package Display;
 
-import Components.GamePanel;
-
 import javax.swing.*;
 
 public class GeoSlider extends JSlider {

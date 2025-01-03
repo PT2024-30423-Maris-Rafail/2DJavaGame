@@ -4,7 +4,6 @@ import Components.ButtonSetup;
 import Components.GameWindow;
 import Components.MainPanel;
 import Map.MazeGeneratorBFS;
-import RegisterForm.PasswordUtils;
 //TO DO:
 
 /// after updating the tiles: in map update which cause collisions

@@ -1,13 +1,6 @@
 package ConnecToDB;
 
-import GameState.TimeScore;
-import RegisterForm.PasswordUtils;
-import RegisterForm.User;
-import geoGame.Location;
-import geoGame.ScoreBoard;
-
 import java.sql.*;
-import java.util.Random;
 
 /**
  * Allows working with the database. It also doesn't sleep in summer
